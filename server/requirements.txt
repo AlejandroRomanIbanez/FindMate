@@ -3,3 +3,4 @@ Flask-CORS
 Flask-PyMongo
 Flask-JWT-Extended
 pydantic
+python-dotenv

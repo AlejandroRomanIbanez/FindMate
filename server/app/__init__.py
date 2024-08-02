@@ -29,6 +29,12 @@ def create_app():
     app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=4)
     jwt = JWTManager(app)
 
+    from .routes.auth_routes import auth_bp
+    from .routes.user_routes import user_bp
+
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(user_bp)
+
     jwt.init_app(app)
 
     return app

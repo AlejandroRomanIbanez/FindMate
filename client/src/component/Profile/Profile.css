@@ -1,0 +1,57 @@
+/* CSS for react-modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 0;
+    position: relative;
+  }
+  
+  .image-modal-content {
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 0;
+  }
+  
+  .image-modal-inner {
+    max-width: 90vw; /* Adjust to make the image occupy most of the viewport width */
+    max-height: 90vh; /* Adjust to make the image occupy most of the viewport height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .edit-profile-modal-content {
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 0;
+  }
+  
+  .img-fluid {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .edit-profile-modal {
+    background-color: #374151; /* Tailwind's gray-700 */
+    border-radius: 0.5rem; /* Tailwind's rounded-md */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1); /* Tailwind's shadow-lg */
+    padding: 1rem; /* Tailwind's p-4 */
+    max-width: 400px; /* Adjust as needed */
+  }
+  

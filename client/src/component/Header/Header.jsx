@@ -1,15 +1,23 @@
 import React, { useState } from 'react';
 import { HiHome } from 'react-icons/hi';
-import { GoBell } from 'react-icons/go';
+import { HiOutlineHome } from "react-icons/hi";
+import { FaRegUser } from "react-icons/fa";
+import { FaUser } from "react-icons/fa";
+import { HiOutlineUserGroup } from "react-icons/hi";
+import { HiUserGroup } from "react-icons/hi";
 import { MdAccountCircle } from 'react-icons/md';
 import { BiHelpCircle } from 'react-icons/bi';
 import { FaAngleDown, FaPowerOff } from 'react-icons/fa';
 import { FiSettings } from 'react-icons/fi';
-import { AiOutlineMessage, AiOutlineHeart } from 'react-icons/ai';
 import Search from '../Search/Search';
 
 function Header() {
   const [showMenu, setShowMenu] = useState(false);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    window.location.href = '/auth';
+  };
 
   return (
     <div className="w-full flex items-center justify-around py-2 sticky top-0 z-50 bg-black">
@@ -25,10 +33,9 @@ function Header() {
 
       {/* menu buttons */}
       <span className="w-auto lg:w-1/2 flex items-center justify-center">
-        <HiHome className="text-white cursor-pointer text-lg mx-2" />
-        <AiOutlineMessage className="text-white cursor-pointer text-lg mx-2" />
-        <GoBell className="text-white cursor-pointer text-lg mx-2" />
-        <AiOutlineHeart className="text-white cursor-pointer text-lg mx-2" />
+        <HiOutlineHome className="text-white cursor-pointer text-lg mx-2" />
+        <FaRegUser className="text-white cursor-pointer text-lg mx-2" />
+        <HiOutlineUserGroup className="text-white cursor-pointer text-lg mx-2" />
       </span>
 
       {/* user menu */}
@@ -62,7 +69,10 @@ function Header() {
               <FiSettings fontSize={16} className="mx-2" />
               Setting
             </li>
-            <li className="w-full h-1/4 shadow flex items-center justify-start list-none px-1 text-white text-xs font-bold hover:bg-gray-900 transition-all duration-300">
+            <li
+              className="w-full h-1/4 shadow flex items-center justify-start list-none px-1 text-white text-xs font-bold hover:bg-gray-900 transition-all duration-300 cursor-pointer"
+              onClick={handleLogout}
+            >
               <FaPowerOff fontSize={16} className="mx-2" />
               Log Out
             </li>
