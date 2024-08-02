@@ -25,10 +25,6 @@ function Post({ post, currentUser }) {
           </h3>
           <h3 className="mx-2 text-gray-200 text-sm lg:text-lg cursor-pointer font-semibold flex items-center justify-center">
             {currentUser?.username || "Loading..."}
-            <span className="mx-2 text-xs lg:text-sm text-gray-500 flex items-center justify-center">
-              <p className="mx-2">{currDate}</p>
-              <p>{currTime}</p>
-            </span>
           </h3>
         </span>
         <span className="w-1/12 flex items-center justify-center">
@@ -47,25 +43,6 @@ function Post({ post, currentUser }) {
           src={post.img_url}
           alt="post"
           className="w-full h-72 md:h-96 lg:h-[36rem] object-cover rounded-2xl"
-        />
-      </span>
-      {/* like comment */}
-      <span className="w-full flex items-center justify-start text-white px-5 my-1 border-b border-gray-700 py-3">
-        <AiOutlineHeart fontSize={19} className="mx-2 cursor-pointer" />
-        <FaRegCommentDots fontSize={19} className="mx-2 cursor-pointer" />
-        <IoIosSend fontSize={19} className="mx-2 cursor-pointer" />
-      </span>
-      {/* comments part */}
-      <span className="w-full px-1 py-2 flex items-center justify-center">
-        <img
-          src={currentUser?.avatar_url || "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"}
-          alt="userPic"
-          className="lg:w-10 lg:h-10 w-8 h-8 rounded-2xl object-cover border-2 border-gray-500 cursor-pointer"
-        />
-        <input
-          type="text"
-          placeholder="Write your comment"
-          className="w-5/6 mx-4 text-gray-200 outline-none bg-gray-700 h-9 rounded-lg text-sm px-3 placeholder:text-gray-600"
         />
       </span>
     </div>

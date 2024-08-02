@@ -9,58 +9,65 @@ function Home() {
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
 
+  const fetchUserData = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/api/user/me', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setUser(data);
+      } else {
+        console.error('Error fetching user data:', data.error);
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+
+  const fetchPosts = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/api/post/all', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setPosts(data);
+      } else {
+        console.error('Error fetching posts:', data.error);
+      }
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+    }
+  };
+
   useEffect(() => {
     window.scrollTo(0, 0);
-
-    const fetchUserData = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        return;
-      }
-
-      try {
-        const response = await fetch('http://localhost:5000/api/user/me', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const data = await response.json();
-        if (response.ok) {
-          setUser(data);
-        } else {
-          console.error('Error fetching user data:', data.error);
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-    };
-
-    const fetchPosts = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        return;
-      }
-
-      try {
-        const response = await fetch('http://localhost:5000/api/post/all', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const data = await response.json();
-        if (response.ok) {
-          setPosts(data);
-        } else {
-          console.error('Error fetching posts:', data.error);
-        }
-      } catch (error) {
-        console.error('Error fetching posts:', error);
-      }
-    };
-
     fetchUserData();
     fetchPosts();
   }, []);
+
+  const handleNewPost = (newPost) => {
+    setPosts((prevPosts) => [newPost, ...prevPosts]);
+  };
+
+  useEffect(() => {
+    fetchPosts();
+  }, [posts]);
 
   return (
     <div className="w-full flex items-start justify-center" style={{ background: 'linear-gradient(to right, white, black)', minHeight: '100vh' }}>
@@ -72,7 +79,7 @@ function Home() {
 
       {/* Center side components */}
       <div className="flex items-center justify-center flex-col p-3 w-full xl:w-1/2">
-        <NewPost />
+        <NewPost onNewPost={handleNewPost} />
         <PostFeed posts={posts} currentUser={user} />
       </div>
 
