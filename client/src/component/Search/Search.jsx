@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { BiSearchAlt } from 'react-icons/bi';
+import { MDBSpinner } from 'mdb-react-ui-kit';
 
 const Search = () => {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState({});
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -64,6 +66,8 @@ const Search = () => {
   }, [query, allUsers]);
 
   const handleFollow = async (targetUserId) => {
+    setLoading(prev => ({ ...prev, [targetUserId]: true }));
+
     try {
       const response = await fetch('http://localhost:5000/api/user/add_friend', {
         method: 'POST',
@@ -75,7 +79,6 @@ const Search = () => {
       });
       const data = await response.json();
       if (response.ok) {
-        alert('Followed successfully');
         if (currentUser) {
           setCurrentUser(prevUser => ({
             ...prevUser,
@@ -94,14 +97,18 @@ const Search = () => {
           );
         }
       } else {
-        alert(`Error: ${data.error}`);
+        console.error(`Error following user: ${data.error}`);
       }
     } catch (error) {
       console.error('Error following user:', error);
+    } finally {
+      setLoading(prev => ({ ...prev, [targetUserId]: false }));
     }
   };
 
   const handleUnfollow = async (targetUserId) => {
+    setLoading(prev => ({ ...prev, [targetUserId]: true }));
+
     try {
       const response = await fetch('http://localhost:5000/api/user/remove_friend', {
         method: 'POST',
@@ -113,7 +120,6 @@ const Search = () => {
       });
       const data = await response.json();
       if (response.ok) {
-        alert('Unfollowed successfully');
         if (currentUser) {
           setCurrentUser(prevUser => ({
             ...prevUser,
@@ -132,10 +138,12 @@ const Search = () => {
           );
         }
       } else {
-        alert(`Error: ${data.error}`);
+        console.error(`Error unfollowing user: ${data.error}`);
       }
     } catch (error) {
       console.error('Error unfollowing user:', error);
+    } finally {
+      setLoading(prev => ({ ...prev, [targetUserId]: false }));
     }
   };
 
@@ -168,17 +176,27 @@ const Search = () => {
               </div>
               {currentUser && currentUser.friends.following.includes(suggestion._id) ? (
                 <button 
-                  className='text-xs px-3 py-1 rounded-md bg-gray-500 text-white'
+                  className='text-xs px-3 py-1 rounded-md bg-gray-500 text-white flex items-center'
                   onClick={() => handleUnfollow(suggestion._id)}
+                  disabled={loading[suggestion._id]}
                 >
-                  Unfollow
+                  {loading[suggestion._id] ? (
+                    <MDBSpinner color='light' size='sm' />
+                  ) : (
+                    'Unfollow'
+                  )}
                 </button>
               ) : (
                 <button 
-                  className='text-xs px-3 py-1 rounded-md bg-yellow-500 text-gray-800'
+                  className='text-xs px-3 py-1 rounded-md bg-yellow-500 text-gray-800 flex items-center'
                   onClick={() => handleFollow(suggestion._id)}
+                  disabled={loading[suggestion._id]}
                 >
-                  Follow
+                  {loading[suggestion._id] ? (
+                    <MDBSpinner color='dark' size='sm' />
+                  ) : (
+                    'Follow'
+                  )}
                 </button>
               )}
             </div>

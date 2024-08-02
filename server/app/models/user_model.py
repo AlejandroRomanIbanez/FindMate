@@ -3,15 +3,6 @@ from typing import List, Dict, Optional
 from ..helpers import to_dict
 
 
-class Post(BaseModel):
-    content: str
-    author: str
-    img_url: str
-
-    def to_dict(self) -> Dict:
-        return to_dict(self)
-
-
 class Friends(BaseModel):
     followers: List[str] = Field(default_factory=list)
     following: List[str] = Field(default_factory=list)
@@ -29,7 +20,7 @@ class User(BaseModel):
     bio: str = Field(..., min_length=1, max_length=100)
     isPaid: bool
     friends: Friends = Field(default_factory=Friends)
-    Posts: List[Post] = Field(default_factory=list)
+    posts: List[str] = Field(default_factory=list)
 
     def to_dict(self) -> Dict:
         return to_dict(self)

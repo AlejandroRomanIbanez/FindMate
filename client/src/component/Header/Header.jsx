@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
-import { HiHome } from 'react-icons/hi';
-import { HiOutlineHome } from "react-icons/hi";
-import { FaRegUser } from "react-icons/fa";
-import { FaUser } from "react-icons/fa";
-import { HiOutlineUserGroup } from "react-icons/hi";
-import { HiUserGroup } from "react-icons/hi";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { HiHome, HiOutlineHome } from 'react-icons/hi';
+import { FaRegUser, FaUser } from 'react-icons/fa';
+import { HiOutlineUserGroup, HiUserGroup } from 'react-icons/hi';
 import { MdAccountCircle } from 'react-icons/md';
 import { BiHelpCircle } from 'react-icons/bi';
 import { FaAngleDown, FaPowerOff } from 'react-icons/fa';
@@ -13,10 +11,46 @@ import Search from '../Search/Search';
 
 function Header() {
   const [showMenu, setShowMenu] = useState(false);
+  const [hoveredIcon, setHoveredIcon] = useState('');
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        handleLogout();
+        return;
+      }
+
+      try {
+        const response = await fetch('http://localhost:5000/api/user/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const data = await response.json();
+        if (response.ok) {
+          setUser(data);
+        } else {
+          handleLogout();
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        handleLogout();
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     window.location.href = '/auth';
+  };
+
+  const handleNavigation = (path) => {
+    navigate(path);
   };
 
   return (
@@ -33,9 +67,29 @@ function Header() {
 
       {/* menu buttons */}
       <span className="w-auto lg:w-1/2 flex items-center justify-center">
-        <HiOutlineHome className="text-white cursor-pointer text-lg mx-2" />
-        <FaRegUser className="text-white cursor-pointer text-lg mx-2" />
-        <HiOutlineUserGroup className="text-white cursor-pointer text-lg mx-2" />
+        <span
+          className="text-lg mx-2 cursor-pointer"
+          onMouseEnter={() => setHoveredIcon('home')}
+          onMouseLeave={() => setHoveredIcon('')}
+          onClick={() => handleNavigation('/')}
+        >
+          {hoveredIcon === 'home' ? <HiHome className="text-white" /> : <HiOutlineHome className="text-white" />}
+        </span>
+        <span
+          className="text-lg mx-2 cursor-pointer"
+          onMouseEnter={() => setHoveredIcon('user')}
+          onMouseLeave={() => setHoveredIcon('')}
+          onClick={() => handleNavigation(`/profile/${user?.username}`)}
+        >
+          {hoveredIcon === 'user' ? <FaUser className="text-white" /> : <FaRegUser className="text-white" />}
+        </span>
+        <span
+          className="text-lg mx-2 cursor-pointer"
+          onMouseEnter={() => setHoveredIcon('group')}
+          onMouseLeave={() => setHoveredIcon('')}
+        >
+          {hoveredIcon === 'group' ? <HiUserGroup className="text-white" /> : <HiOutlineUserGroup className="text-white" />}
+        </span>
       </span>
 
       {/* user menu */}
@@ -45,12 +99,12 @@ function Header() {
           onClick={() => setShowMenu(!showMenu)}
         >
           <img
-            src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
+            src={user?.avatar_url || "/user_default.png"}
             alt="userPic"
             className="w-9 h-5/6 object-cover rounded-lg"
           />
           <h2 className="text-xs text-white mx-2 font-semibold lg:flex hidden mt-2">
-            username@example.com
+            {user?.username || 'Loading...'}
           </h2>
           <FaAngleDown className="mx-1 text-white" />
         </span>

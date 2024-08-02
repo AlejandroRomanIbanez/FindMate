@@ -16,7 +16,9 @@ import "./Profile.css";
 Modal.setAppElement('#root'); // Set the app element for accessibility
 
 export default function Profile() {
+  const [hovered, setHovered] = useState(false);
   const { username } = useParams();
+  const [currentUser, setCurrentUser] = useState(null);
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [modalImage, setModalImage] = useState('');
@@ -35,6 +37,23 @@ export default function Profile() {
   });
 
   useEffect(() => {
+    const fetchCurrentUserData = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await fetch('http://localhost:5000/api/user/me', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setCurrentUser(data);
+      } else {
+        console.error(data.error);
+      }
+    };
+
     const fetchUserData = async () => {
       const token = localStorage.getItem('token');
       const response = await fetch(`http://localhost:5000/api/user/${username}`, {
@@ -45,11 +64,25 @@ export default function Profile() {
       const data = await response.json();
       if (response.ok) {
         setUser(data);
+
+        // Fetch the posts for the user
+        const postsResponse = await fetch(`http://localhost:5000/api/post/user/${data._id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const postsData = await postsResponse.json();
+        if (postsResponse.ok) {
+          setUser(prevUser => ({ ...prevUser, posts: postsData }));
+        } else {
+          alert(postsData.error);
+        }
       } else {
         alert(data.error);
       }
     };
 
+    fetchCurrentUserData();
     fetchUserData();
   }, [username]);
 
@@ -148,14 +181,25 @@ export default function Profile() {
                   fluid 
                   style={{ width: '150px', zIndex: '1' }} 
                 />
-                <MDBBtn 
-                  outline 
-                  color="dark" 
-                  style={{ height: '36px', overflow: 'visible' }} 
-                  onClick={toggleEditProfileModal}
-                >
-                  Edit profile
-                </MDBBtn>
+                {currentUser && currentUser.username === user.username && (
+                  <MDBBtn 
+                    outline 
+                    color="dark" 
+                    style={{ 
+                      height: '36px', 
+                      overflow: 'visible', 
+                      backgroundColor: hovered ? 'black' : 'transparent',
+                      color: hovered ? 'white' : 'black',
+                      borderColor: 'black',
+                      transition: 'background-color 0.3s, color 0.3s'
+                    }} 
+                    onClick={toggleEditProfileModal}
+                    onMouseEnter={() => setHovered(true)}
+                    onMouseLeave={() => setHovered(false)}
+                  >
+                    Edit profile
+                  </MDBBtn>
+                )}
               </div>
               <div className="ms-3" style={{ marginTop: '115px' }}>
                 <MDBTypography className='mb-1' tag="h5">{user.username}</MDBTypography>
