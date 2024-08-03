@@ -2,17 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HiHome, HiOutlineHome } from 'react-icons/hi';
 import { FaRegUser, FaUser } from 'react-icons/fa';
-import { HiOutlineUserGroup, HiUserGroup } from 'react-icons/hi';
-import { MdAccountCircle } from 'react-icons/md';
-import { BiHelpCircle } from 'react-icons/bi';
 import { FaAngleDown, FaPowerOff } from 'react-icons/fa';
-import { FiSettings } from 'react-icons/fi';
 import Search from '../Search/Search';
 
-function Header() {
+function Header({ user, setUser, allUsers, loading, setLoading, fetchUserData }) {
   const [showMenu, setShowMenu] = useState(false);
   const [hoveredIcon, setHoveredIcon] = useState('');
-  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -42,7 +37,7 @@ function Header() {
     };
 
     fetchUserData();
-  }, []);
+  }, [setUser]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -61,7 +56,7 @@ function Header() {
           <span className="lg:w-4 lg:h-4 w-2 h-2 bg-black cursor-pointer"></span>
         </span>
         <span className="lg:mx-3 lg:flex w-full relative">
-          <Search />
+          <Search user={user} allUsers={allUsers} loading={loading} setLoading={setLoading} fetchUserData={fetchUserData} />
         </span>
       </span>
 
@@ -105,16 +100,8 @@ function Header() {
         {showMenu && (
           <div className="absolute w-32 h-36 shadow-xl top-10 right-0 flex items-center justify-center flex-col bg-black/90 rounded-md">
             <li className="w-full h-1/4 shadow flex items-center justify-start list-none px-1 text-white text-xs font-bold hover:bg-gray-900 transition-all duration-300">
-              <MdAccountCircle fontSize={16} className="mx-2" />
-              Account
-            </li>
-            <li className="w-full h-1/4 shadow flex items-center justify-start list-none px-1 text-white text-xs font-bold hover:bg-gray-900 transition-all duration-300">
-              <BiHelpCircle fontSize={16} className="mx-2" />
-              Help
-            </li>
-            <li className="w-full h-1/4 shadow flex items-center justify-start list-none px-1 text-white text-xs font-bold hover:bg-gray-900 transition-all duration-300">
-              <FiSettings fontSize={16} className="mx-2" />
-              Setting
+              <FaUser fontSize={16} className="mx-2" />
+              Profile
             </li>
             <li
               className="w-full h-1/4 shadow flex items-center justify-start list-none px-1 text-white text-xs font-bold hover:bg-gray-900 transition-all duration-300 cursor-pointer"

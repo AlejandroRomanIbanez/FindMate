@@ -6,9 +6,12 @@ import Hobbies from "../Hobbies/Hobbies";
 import PossibleFriends from "../PossibleFriends/PossibleFriends";
 import Friends from "../Friends/Friends";
 
-function Home({ user, setUser, allUsers, setAllUsers, fetchUserData, loading, setLoading, handleOpenFriendsModal }) {
+function Home({ user, setUser, allUsers, setAllUsers, fetchUserData, loading, setLoading }) {
   const [posts, setPosts] = useState([]);
   const [newPostAdded, setNewPostAdded] = useState(false); // State to track new post addition
+  const [loadingPosts, setLoadingPosts] = useState(true);
+  const [isFriendsModalOpen, setIsFriendsModalOpen] = useState(false);
+  const [initialTab, setInitialTab] = useState('followers'); // State to track which tab to open in the friends modal
 
   const fetchPosts = async () => {
     const token = localStorage.getItem('token');
@@ -17,6 +20,7 @@ function Home({ user, setUser, allUsers, setAllUsers, fetchUserData, loading, se
     }
 
     try {
+      setLoadingPosts(true); // Set loading state to true before fetching
       const response = await fetch('http://localhost:5000/api/post/all', {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -30,6 +34,8 @@ function Home({ user, setUser, allUsers, setAllUsers, fetchUserData, loading, se
       }
     } catch (error) {
       console.error('Error fetching posts:', error);
+    } finally {
+      setLoadingPosts(false); // Set loading state to false after fetching
     }
   };
 
@@ -55,6 +61,15 @@ function Home({ user, setUser, allUsers, setAllUsers, fetchUserData, loading, se
     setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
   };
 
+  const handleOpenFriendsModal = (tab) => {
+    setInitialTab(tab);
+    setIsFriendsModalOpen(true);
+  };
+
+  const handleCloseFriendsModal = () => {
+    setIsFriendsModalOpen(false);
+  };
+
   return (
     <div className="w-full flex items-start justify-center" style={{ background: 'linear-gradient(to right, white, black)', minHeight: '100vh' }}>
       {/* Left side components */}
@@ -66,13 +81,23 @@ function Home({ user, setUser, allUsers, setAllUsers, fetchUserData, loading, se
       {/* Center side components */}
       <div className="flex items-center justify-center flex-col p-3 w-full xl:w-1/2">
         <NewPost onNewPost={handleNewPost} allUsers={allUsers} currentUser={user} />
-        <PostFeed posts={posts} allUsers={allUsers} onDeletePost={handleDeletePost} />
+        <PostFeed posts={posts} allUsers={allUsers} onDeletePost={handleDeletePost} loading={loadingPosts} />
       </div>
 
       {/* Right side components */}
       <div className="hidden 2xl:flex items-center justify-center flex-col p-3 w-1/4 sticky right-0 top-16">
         {allUsers.length > 0 && user && <PossibleFriends allUsers={allUsers} currentUser={user} fetchCurrentUser={fetchUserData} loading={loading} setLoading={setLoading} />}
       </div>
+
+      {/* Friends modal */}
+      <Friends
+        isOpen={isFriendsModalOpen}
+        onClose={handleCloseFriendsModal}
+        initialTab={initialTab}
+        currentUser={user}
+        allUsers={allUsers}
+        fetchCurrentUser={fetchUserData}
+      />
     </div>
   );
 }

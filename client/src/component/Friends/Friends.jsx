@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MDBSpinner } from 'mdb-react-ui-kit';
 
-function Friends({ isOpen, onClose, initialTab, currentUser, allUsers, fetchCurrentUser, onUserChange }) {
+function Friends({ isOpen, onClose, initialTab, currentUser, allUsers, fetchCurrentUser }) {
   const [activeTab, setActiveTab] = useState(initialTab || 'followers');
   const [loading, setLoading] = useState({});
   const modalRef = useRef();
@@ -43,9 +43,6 @@ function Friends({ isOpen, onClose, initialTab, currentUser, allUsers, fetchCurr
       const data = await response.json();
       if (response.ok) {
         fetchCurrentUser(); // Re-fetch current user data
-        if (onUserChange) {
-          onUserChange();
-        }
       } else {
         console.error(`Error unfollowing user: ${data.error}`);
       }

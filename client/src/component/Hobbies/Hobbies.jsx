@@ -103,7 +103,7 @@ function Hobbies({ user, token }) {
                 onClick={() => deleteHobby(item)}
               >
                 <MdClose
-                  className="text-black hover:text-white"
+                  className="text-black hover:textwh"
                   size={12}
                 />
               </div>

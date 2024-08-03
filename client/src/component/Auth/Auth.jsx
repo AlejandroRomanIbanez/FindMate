@@ -17,37 +17,46 @@ function Auth() {
     const [username, setUsername] = useState('');
     const [age, setAge] = useState('');
     const [bio, setBio] = useState('');
+    const [error, setError] = useState('');  // New state for error handling
 
     const handleLogin = async () => {
-        const response = await fetch('http://localhost:5000/api/auth/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email, password })
-        });
-        const data = await response.json();
-        if (response.ok) {
-            localStorage.setItem('token', data.access_token);
-            window.location.href = '/';
-        } else {
-            alert(data.error);
+        try {
+            const response = await fetch('http://localhost:5000/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                localStorage.setItem('token', data.access_token);
+                window.location.href = '/';
+            } else {
+                setError(data.error || 'Login failed. Please try again.');
+            }
+        } catch (error) {
+            setError('An unexpected error occurred.');
         }
     };
 
     const handleSignUp = async () => {
-        const response = await fetch('http://localhost:5000/api/auth/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ username, email, password, age: parseInt(age), bio })
-        });
-        const data = await response.json();
-        if (response.ok) {
-            setIsLogin(true);
-        } else {
-            alert(data.error);
+        try {
+            const response = await fetch('http://localhost:5000/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, email, password, age: parseInt(age), bio })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setIsLogin(true);
+            } else {
+                setError(data.error || 'Registration failed. Please try again.');
+            }
+        } catch (error) {
+            setError('An unexpected error occurred.');
         }
     };
 
@@ -68,6 +77,7 @@ function Auth() {
                             <MDBInput wrapperClass='mb-4' label='Email' id='form4' type='email' value={email} onChange={(e) => setEmail(e.target.value)} />
                             <MDBInput wrapperClass='mb-4' label='Password' id='form5' type='password' value={password} onChange={(e) => setPassword(e.target.value)} />
                             <MDBBtn className='w-100 mb-4' size='md' onClick={isLogin ? handleLogin : handleSignUp}>{isLogin ? 'Login' : 'Sign up'}</MDBBtn>
+                            {error && <p className="text-danger">{error}</p>}  {/* Display error message */}
                             <p className="mb-0">{isLogin ? "Don't have an account?" : 'Already have an account?'} <span onClick={() => setIsLogin(!isLogin)} style={{ cursor: 'pointer', color: '#1266f1' }}>{isLogin ? 'Sign up' : 'Login'}</span></p>
                         </MDBCardBody>
                     </MDBCard>

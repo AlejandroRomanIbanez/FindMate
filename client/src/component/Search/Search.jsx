@@ -123,9 +123,9 @@ const Search = ({ user, allUsers, loading, setLoading, fetchUserData }) => {
                       e.stopPropagation();
                       handleUnfollow(suggestion._id);
                     }}
-                    disabled={loading[suggestion._id]}
+                    disabled={loading && loading[suggestion._id]}
                   >
-                    {loading[suggestion._id] ? (
+                    {loading && loading[suggestion._id] ? (
                       <MDBSpinner color='light' size='sm' />
                     ) : (
                       'Unfollow'
@@ -138,9 +138,9 @@ const Search = ({ user, allUsers, loading, setLoading, fetchUserData }) => {
                       e.stopPropagation();
                       handleFollow(suggestion._id);
                     }}
-                    disabled={loading[suggestion._id]}
+                    disabled={loading && loading[suggestion._id]}
                   >
-                    {loading[suggestion._id] ? (
+                    {loading && loading[suggestion._id] ? (
                       <MDBSpinner color='dark' size='sm' />
                     ) : (
                       'Follow'

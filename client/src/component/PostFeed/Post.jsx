@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { AiOutlineHeart } from "react-icons/ai";
 import { IoIosSend } from "react-icons/io";
@@ -12,7 +11,6 @@ function Post({ post, allUsers, onDeletePost }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);  // Ref for the dropdown menu
-  const navigate = useNavigate();
 
   const author = allUsers.find(user => user._id === post.author);
 
@@ -52,17 +50,11 @@ function Post({ post, allUsers, onDeletePost }) {
     };
   }, []);
 
-  const navigateToProfile = () => {
-    if (author) {
-      navigate(`/profile/${author.username}`);
-    }
-  };
-
   return (
     <div className="bg-gray-800 w-full lg:px-4 py-2 my-3 rounded-3xl flex items-center justify-center flex-col">
       {/* post top section */}
       <span className="w-full flex items-center justify-center my-2">
-        <span className="w-1/12 flex items-center justify-center" onClick={navigateToProfile}>
+        <span className="w-1/12 flex items-center justify-center">
           <img
             src={author?.avatar_url || "user_default.png"}
             alt="userPic"
@@ -70,10 +62,10 @@ function Post({ post, allUsers, onDeletePost }) {
           />
         </span>
         <span className="w-3/4 flex items-start justify-center flex-col">
-          <h3 className="mx-2 text-gray-400 text-sm lg:text-base cursor-pointer font-semibold my-1" onClick={navigateToProfile}>
+          <h3 className="mx-2 text-gray-400 text-sm lg:text-base cursor-pointer font-semibold my-1">
             {author?.email || "Loading..."}
           </h3>
-          <h3 className="mx-2 text-gray-200 text-sm lg:text-lg cursor-pointer font-semibold flex items-center justify-center" onClick={navigateToProfile}>
+          <h3 className="mx-2 text-gray-200 text-sm lg:text-lg cursor-pointer font-semibold flex items-center justify-center">
             {author?.username || "Loading..."}
           </h3>
         </span>
