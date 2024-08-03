@@ -244,64 +244,77 @@ export default function Profile() {
         isOpen={showEditProfileModal}
         onRequestClose={toggleEditProfileModal}
         contentLabel="Edit Profile"
-        className="edit-profile-modal-content"
-        overlayClassName="modal-overlay"
+        className="flex items-center justify-center h-full"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center"
       >
-        <form className="edit-profile-modal" onSubmit={handleSubmit}>
-          <input
-            type="file"
-            id="image"
-            accept="image/*"
-            className="my-3 cursor-pointer file:bg-yellow-200 file:border-yellow-400 file:text-base file:font-semibold file:rounded-md file:mx-5 file:outline-none file:shadow-md file:font-sans file:cursor-pointer file:px-4"
-            onChange={handleFileChange}
-          />
-          <input
-            type="text"
-            name="username"
-            maxLength={150}
-            placeholder="Username..."
-            className="w-full my-3 bg-transparent border border-gray-900 rounded px-2 text-sm outline-none py-2 placeholder:text-gray-300"
-            value={user.username}
-            onChange={handleChange}
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Email..."
-            className="w-full my-3 bg-transparent border border-gray-900 rounded px-2 text-sm outline-none py-2 placeholder:text-gray-300"
-            value={user.email}
-            onChange={handleChange}
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password..."
-            className="w-full my-3 bg-transparent border border-gray-900 rounded px-2 text-sm outline-none py-2 placeholder:text-gray-300"
-            value={user.password}
-            onChange={handleChange}
-          />
-          <input
-            type="number"
-            name="age"
-            placeholder="Age..."
-            className="w-full my-3 bg-transparent border border-gray-900 rounded px-2 text-sm outline-none py-2 placeholder:text-gray-300"
-            value={user.age}
-            onChange={handleChange}
-          />
-          <textarea
-            name="bio"
-            placeholder="Bio..."
-            className="w-full my-3 bg-transparent border border-gray-900 rounded px-2 text-sm outline-none py-2 placeholder:text-gray-300"
-            value={user.bio}
-            onChange={handleChange}
-          />
-          <input
-            type="submit"
-            className="px-5 py-2 my-4 text-white font-semibold rounded-md cursor-pointer"
-            value="Save changes"
-            style={{ background: 'linear-gradient(45deg, gray 0%, yellow 100%)' }}
-          />
-        </form>
+        <div className="bg-gray-800 p-6 rounded-lg shadow-xl text-white max-w-md mx-auto">
+          <h2 className="text-lg font-bold mb-4">Edit Profile</h2>
+          <form onSubmit={handleSubmit}>
+            <label className="block my-3">
+              <span className="sr-only">Choose profile photo</span>
+              <input
+                type="file"
+                id="image"
+                accept="image/*"
+                className="block w-full text-sm text-gray-300
+                           file:mr-4 file:py-2 file:px-4
+                           file:rounded-md file:border-0
+                           file:text-sm file:font-semibold
+                           file:bg-yellow-200 file:text-gray-700
+                           hover:file:bg-yellow-300"
+                onChange={handleFileChange}
+              />
+            </label>
+            <input
+              type="text"
+              name="username"
+              maxLength={150}
+              placeholder="Username..."
+              className="w-full my-3 bg-transparent border border-gray-900 rounded px-2 text-sm outline-none py-2 placeholder:text-gray-300"
+              value={user.username}
+              onChange={handleChange}
+            />
+            <input
+              type="email"
+              name="email"
+              placeholder="Email..."
+              className="w-full my-3 bg-transparent border border-gray-900 rounded px-2 text-sm outline-none py-2 placeholder:text-gray-300"
+              value={user.email}
+              onChange={handleChange}
+            />
+            <input
+              type="password"
+              name="password"
+              placeholder="Password..."
+              className="w-full my-3 bg-transparent border border-gray-900 rounded px-2 text-sm outline-none py-2 placeholder:text-gray-300"
+              value={user.password}
+              onChange={handleChange}
+            />
+            <input
+              type="number"
+              name="age"
+              placeholder="Age..."
+              className="w-full my-3 bg-transparent border border-gray-900 rounded px-2 text-sm outline-none py-2 placeholder:text-gray-300"
+              value={user.age}
+              onChange={handleChange}
+            />
+            <textarea
+              name="bio"
+              placeholder="Bio..."
+              className="w-full my-3 bg-transparent border border-gray-900 rounded px-2 text-sm outline-none py-2 placeholder:text-gray-300"
+              value={user.bio}
+              onChange={handleChange}
+            />
+            <div className="flex justify-center">
+              <input
+                type="submit"
+                className="px-5 py-2 my-4 text-white font-semibold rounded-md cursor-pointer"
+                value="Save changes"
+                style={{ background: 'linear-gradient(45deg, gray 0%, yellow 100%)' }}
+              />
+            </div>
+          </form>
+        </div>
       </Modal>
 
       <Modal

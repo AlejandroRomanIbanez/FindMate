@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { BsImage, BsFillCalendar2HeartFill } from "react-icons/bs";
-import { MdOutlineSlowMotionVideo, MdOutlinePoll } from "react-icons/md";
-import { ImCross } from "react-icons/im";
+import Modal from 'react-modal';
+import { BsImage } from "react-icons/bs";
 
-function NewPost({ onNewPost }) {
+Modal.setAppElement('#root');
+
+function NewPost({ onNewPost, currentUser }) {
   const [uploadData, setUploadData] = useState(false);
   const [image, setImage] = useState(null);
   const [title, setTitle] = useState('');
@@ -81,7 +82,7 @@ function NewPost({ onNewPost }) {
     <div className="w-full lg:w-4/5 rounded-xl px-3 py-2 bg-gray-800 flex items-center justify-center flex-col">
       <span className="flex items-center justify-center w-full">
         <img
-          src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
+          src={currentUser?.avatar_url || "/user_default.png"}
           alt=""
           className="lg:w-12 lg:h-12 w-10 h-10 rounded-2xl border-2 border-gray-500 object-cover overflow-hidden"
         />
@@ -102,41 +103,43 @@ function NewPost({ onNewPost }) {
           <BsImage className="text-green-600 mx-1" />
           <h3 className="text-white text-xs">Photo</h3>
         </label>
-        <label
-          className="flex items-center justify-center bg-gray-700 px-3 rounded-lg cursor-pointer py-2 m-1"
-        >
-          <MdOutlineSlowMotionVideo fontSize={18} className="text-blue-600 mx-1" />
-          <h3 className="text-white text-xs">Video</h3>
-        </label>
-        <label className="flex items-center justify-center bg-gray-700 px-3 rounded-lg cursor-pointer py-2 m-1">
-          <MdOutlinePoll fontSize={18} className="text-orange-600 mx-1" />
-          <h3 className="text-white text-xs">Poll</h3>
-        </label>
-        <label className="flex items-center justify-center bg-gray-700 px-3 rounded-lg cursor-pointer py-2 m-1">
-          <BsFillCalendar2HeartFill className="text-yellow-600 mx-1" />
-          <h3 className="text-white text-xs">Schedule</h3>
-        </label>
       </span>
 
-      {uploadData && (
-        <div className="fixed w-screen h-screen top-0 left-0 bg-black/50 z-50 flex items-center justify-center">
-          <form className="w-full flex items-center justify-center h-full" onSubmit={handleSubmit}>
-            <div className="w-full max-w-md bg-gray-800 relative shadow-lg rounded-lg flex items-center justify-center flex-col text-white px-3 py-4">
+      <Modal
+        isOpen={uploadData}
+        onRequestClose={() => setUploadData(false)}
+        shouldCloseOnOverlayClick={true}
+        contentLabel="New Post"
+        className="flex items-center justify-center"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center"
+      >
+        <div className="bg-gray-800 p-6 rounded-lg shadow-xl text-white max-w-md mx-auto relative">
+          <h2 className="text-lg font-bold mb-4">Create New Post</h2>
+          <form onSubmit={handleSubmit}>
+            <label className="block my-3">
+              <span className="sr-only">Choose profile photo</span>
               <input
                 type="file"
                 id="image"
                 accept="image/*"
-                className="my-3 cursor-pointer file:bg-yellow-200 file:border-yellow-400 file:text-base file:font-semibold file:rounded-md file:mx-5 file:outline-none file:shadow-md file:font-sans file:cursor-pointer file:px-4"
+                className="block w-full text-sm text-gray-300
+                           file:mr-4 file:py-2 file:px-4
+                           file:rounded-md file:border-0
+                           file:text-sm file:font-semibold
+                           file:bg-yellow-200 file:text-gray-700
+                           hover:file:bg-yellow-300"
                 onChange={handleFileChange}
               />
-              <input
-                type="text"
-                maxLength={150}
-                placeholder="Post title..."
-                className="w-full my-3 bg-gray-700 border border-gray-600 rounded px-4 py-2 text-sm outline-none placeholder-gray-400"
-                value={title}
-                onChange={handleTitleChange}
-              />
+            </label>
+            <input
+              type="text"
+              maxLength={150}
+              placeholder="Your Thoughts..."
+              className="w-full my-3 bg-gray-700 border border-gray-600 rounded px-4 py-2 text-sm outline-none placeholder-gray-400"
+              value={title}
+              onChange={handleTitleChange}
+            />
+            <div className="flex justify-center">
               <input
                 type="submit"
                 className="px-5 py-2 my-4 text-white font-semibold rounded-md cursor-pointer"
@@ -144,15 +147,10 @@ function NewPost({ onNewPost }) {
                 style={{ background: 'linear-gradient(45deg, gray 0%, yellow 100%)' }}
                 disabled={uploading}
               />
-              <ImCross
-                fontSize={15}
-                className="absolute top-2 right-2 cursor-pointer"
-                onClick={() => setUploadData(false)}
-              />
             </div>
           </form>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

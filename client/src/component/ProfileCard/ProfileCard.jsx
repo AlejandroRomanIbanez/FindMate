@@ -1,6 +1,6 @@
 import React from "react";
 
-function ProfileCard({ user }) {
+function ProfileCard({ user, onOpenFriendsModal }) {
   if (!user) {
     return <div>Loading...</div>;
   }
@@ -18,11 +18,17 @@ function ProfileCard({ user }) {
       />
 
       <div className="mt-14 w-full flex items-center justify-between px-4">
-        <div className="flex items-center justify-center flex-col">
+        <div 
+          className="flex items-center justify-center flex-col cursor-pointer" 
+          onClick={() => onOpenFriendsModal('followers')}
+        >
           <h1 className="font-bold text-gray-300">{user?.friends.followers.length}</h1>
           <h2 className="text-sm text-gray-500 font-semibold">Followers</h2>
         </div>
-        <div className="flex items-center justify-center flex-col">
+        <div 
+          className="flex items-center justify-center flex-col cursor-pointer" 
+          onClick={() => onOpenFriendsModal('following')}
+        >
           <h1 className="font-bold text-gray-300">{user?.friends.following.length}</h1>
           <h2 className="text-sm text-gray-500 font-semibold">Following</h2>
         </div>
