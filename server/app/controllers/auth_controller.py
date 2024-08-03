@@ -2,6 +2,8 @@ from flask import request, jsonify
 from flask_jwt_extended import create_access_token
 from app.models.user_model import UserRegistration, UserLogin
 from app.services.auth_service import register_user, login_user
+from app.utils.custom_errors import UserAlreadyExistsError, UserNotFoundError, IncorrectPasswordError
+from pydantic import ValidationError
 
 
 def register():
@@ -15,7 +17,16 @@ def register():
             tuple: JSON response and HTTP status code.
     """
     data = UserRegistration(**request.get_json())
-    response, status = register_user(data)
+    try:
+        response, status = register_user(data)
+    except ValidationError as e:
+        return jsonify({'error': str(e)}), 422
+    except UserAlreadyExistsError as e:
+        return jsonify({'error': str(e)}), 400
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
+    except TypeError as e:
+        return jsonify({'error': str(e)}), 400
     return jsonify(response), status
 
 
@@ -30,9 +41,17 @@ def login():
         tuple: JSON response and HTTP status code.
     """
     data = UserLogin(**request.get_json())
-    user = login_user(data)
-    if 'error' in user:
-        return jsonify(user), 401
-
+    try:
+        user = login_user(data)
+    except ValidationError as e:
+        return jsonify({'error': str(e)}), 422
+    except UserNotFoundError as e:
+        return jsonify({'error': str(e)}), 404
+    except IncorrectPasswordError as e:
+        return jsonify({'error': str(e)}), 401
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
+    except TypeError as e:
+        return jsonify({'error': str(e)}), 400
     access_token = create_access_token(identity=str(user['_id']))
     return jsonify({'access_token': access_token}), 200

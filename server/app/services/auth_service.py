@@ -1,5 +1,6 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import mongo
+from app.utils.custom_errors import UserAlreadyExistsError, UserNotFoundError, IncorrectPasswordError
 
 
 def register_user(data):
@@ -22,7 +23,7 @@ def register_user(data):
     bio = data.bio
 
     if mongo.dbs.users.find_one({'username': username}):
-        return {'error': 'Username already exists'}, 400
+        raise UserAlreadyExistsError()
 
     mongo.dbs.users.insert_one({'avatar_url': '',
                                'email': email,
@@ -52,7 +53,9 @@ def login_user(data):
     password = data.password
 
     user = mongo.dbs.users.find_one({'email': email})
-    if not user or not check_password_hash(user['password'], password):
-        return {'error': 'Invalid username or password'}, 401
+    if not user:
+        raise UserNotFoundError()
+    if not check_password_hash(user['password'], password):
+        raise IncorrectPasswordError()
 
     return user
