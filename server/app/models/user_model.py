@@ -19,6 +19,7 @@ class User(BaseModel):
     age: int
     bio: str = Field(..., min_length=1, max_length=100)
     isPaid: bool
+    hobbies: List[str] = Field(default_factory=list)
     friends: Friends = Field(default_factory=Friends)
     posts: List[str] = Field(default_factory=list)
 

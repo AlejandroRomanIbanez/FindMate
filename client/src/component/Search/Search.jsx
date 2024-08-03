@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { BiSearchAlt } from 'react-icons/bi';
 import { MDBSpinner } from 'mdb-react-ui-kit';
+import { useNavigate } from 'react-router-dom';
 
 const Search = ({ user, allUsers, loading, setLoading, fetchUserData }) => {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchSuggestions = () => {
       if (query.length > 1) {
-        const filteredSuggestions = allUsers.filter(user =>
-          user.username.toLowerCase().includes(query.toLowerCase()) ||
-          user.email.toLowerCase().includes(query.toLowerCase())
+        const filteredSuggestions = allUsers.filter(
+          suggestionUser =>
+            suggestionUser._id !== user._id &&
+            (suggestionUser.username.toLowerCase().includes(query.toLowerCase()) ||
+            suggestionUser.email.toLowerCase().includes(query.toLowerCase()))
         );
         setSuggestions(filteredSuggestions);
       } else {
@@ -24,7 +28,7 @@ const Search = ({ user, allUsers, loading, setLoading, fetchUserData }) => {
     }, 500); // Adjust delay for debounce
 
     return () => clearTimeout(delayDebounceFn);
-  }, [query, allUsers]);
+  }, [query, allUsers, user]);
 
   const handleFollow = async (targetUserId) => {
     setLoading(prev => ({ ...prev, [targetUserId]: true }));
@@ -76,6 +80,10 @@ const Search = ({ user, allUsers, loading, setLoading, fetchUserData }) => {
     }
   };
 
+  const handleUserClick = (username) => {
+    navigate(`/profile/${username}`);
+  };
+
   return (
     <div className='w-full relative'>
       <div className='relative flex items-center'>
@@ -91,7 +99,11 @@ const Search = ({ user, allUsers, loading, setLoading, fetchUserData }) => {
       {suggestions.length > 0 && (
         <div className='absolute top-full mt-1 w-full bg-white shadow-lg rounded-md z-10'>
           {suggestions.map((suggestion) => (
-            <div key={suggestion._id} className='flex items-center justify-between p-2 border-b last:border-none'>
+            <div 
+              key={suggestion._id} 
+              className='flex items-center justify-between p-2 border-b last:border-none cursor-pointer'
+              onClick={() => handleUserClick(suggestion.username)}
+            >
               <div className='flex items-center'>
                 <img 
                   src={suggestion.avatar_url || '/user_default.png'} 
@@ -106,8 +118,11 @@ const Search = ({ user, allUsers, loading, setLoading, fetchUserData }) => {
               <div className="flex items-center">
                 {user && user.friends.following.includes(suggestion._id) ? (
                   <button 
-                    className='text-xs px-3 py-1 rounded-md bg-gray-500 text-white flex items-center justify-center'
-                    onClick={() => handleUnfollow(suggestion._id)}
+                    className='text-xs px-3 py-1 rounded-md bg-gray-600 text-white hover:bg-gray-500 flex items-center justify-center'
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleUnfollow(suggestion._id);
+                    }}
                     disabled={loading[suggestion._id]}
                   >
                     {loading[suggestion._id] ? (
@@ -118,8 +133,11 @@ const Search = ({ user, allUsers, loading, setLoading, fetchUserData }) => {
                   </button>
                 ) : (
                   <button 
-                    className='text-xs px-3 py-1 rounded-md bg-yellow-500 text-gray-800 flex items-center justify-center'
-                    onClick={() => handleFollow(suggestion._id)}
+                    className='text-xs px-3 py-1 rounded-md bg-yellow-500 text-gray-800 hover:bg-yellow-400 flex items-center justify-center'
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleFollow(suggestion._id);
+                    }}
                     disabled={loading[suggestion._id]}
                   >
                     {loading[suggestion._id] ? (

@@ -97,7 +97,7 @@ function NewPost({ onNewPost, currentUser }) {
 
       <span className="flex flex-wrap items-center justify-end w-full lg:w-4/5 my-3">
         <label
-          className="flex items-center justify-center bg-gray-700 px-3 rounded-lg cursor-pointer py-2 m-1"
+          className="flex items-center justify-center bg-gray-700 hover:bg-gray-600 px-3 rounded-lg cursor-pointer py-2 m-1"
           onClick={() => setUploadData(true)}
         >
           <BsImage className="text-green-600 mx-1" />

@@ -109,3 +109,29 @@ def remove_friend(current_user_id, target_user_id):
 
     return {'message': 'Friend removed successfully'}, 200
 
+
+def add_hobby(user_id, hobby):
+    result = mongo.dbs.users.update_one(
+        {'_id': ObjectId(user_id)},
+        {'$addToSet': {'hobbies': hobby}}
+    )
+    if result.modified_count == 0:
+        return {'error': 'Failed to add hobby'}, 400
+    return {'message': 'Hobby added successfully'}, 200
+
+
+def get_hobbies(user_id):
+    user = mongo.dbs.users.find_one({'_id': ObjectId(user_id)}, {'hobbies': 1})
+    if not user:
+        return {'error': 'User not found'}, 404
+    return {'hobbies': user.get('hobbies', [])}, 200
+
+
+def delete_hobby(user_id, hobby):
+    result = mongo.dbs.users.update_one(
+        {'_id': ObjectId(user_id)},
+        {'$pull': {'hobbies': hobby}}
+    )
+    if result.modified_count == 0:
+        return {'error': 'Failed to delete hobby'}, 400
+    return {'message': 'Hobby deleted successfully'}, 200

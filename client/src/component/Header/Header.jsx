@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HiHome, HiOutlineHome } from 'react-icons/hi';
 import { FaRegUser, FaUser } from 'react-icons/fa';
@@ -9,10 +9,40 @@ import { FaAngleDown, FaPowerOff } from 'react-icons/fa';
 import { FiSettings } from 'react-icons/fi';
 import Search from '../Search/Search';
 
-function Header({ user, setUser, allUsers, loading, setLoading, fetchUserData }) {
+function Header() {
   const [showMenu, setShowMenu] = useState(false);
   const [hoveredIcon, setHoveredIcon] = useState('');
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        handleLogout();
+        return;
+      }
+
+      try {
+        const response = await fetch('http://localhost:5000/api/user/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const data = await response.json();
+        if (response.ok) {
+          setUser(data);
+        } else {
+          handleLogout();
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        handleLogout();
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -31,7 +61,7 @@ function Header({ user, setUser, allUsers, loading, setLoading, fetchUserData })
           <span className="lg:w-4 lg:h-4 w-2 h-2 bg-black cursor-pointer"></span>
         </span>
         <span className="lg:mx-3 lg:flex w-full relative">
-          <Search user={user} allUsers={allUsers} loading={loading} setLoading={setLoading} fetchUserData={fetchUserData} />
+          <Search />
         </span>
       </span>
 
@@ -52,13 +82,6 @@ function Header({ user, setUser, allUsers, loading, setLoading, fetchUserData })
           onClick={() => handleNavigation(`/profile/${user?.username}`)}
         >
           {hoveredIcon === 'user' ? <FaUser className="text-white" /> : <FaRegUser className="text-white" />}
-        </span>
-        <span
-          className="text-lg mx-2 cursor-pointer"
-          onMouseEnter={() => setHoveredIcon('group')}
-          onMouseLeave={() => setHoveredIcon('')}
-        >
-          {hoveredIcon === 'group' ? <HiUserGroup className="text-white" /> : <HiOutlineUserGroup className="text-white" />}
         </span>
       </span>
 

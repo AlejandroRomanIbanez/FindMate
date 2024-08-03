@@ -61,17 +61,19 @@ function Friends({ isOpen, onClose, initialTab, currentUser, allUsers, fetchCurr
   };
 
   const followersTab = (
-    <div>
+    <div className="space-y-4">
       {currentUser?.friends.followers.map(userId => {
         const user = getUserInfo(userId);
         return (
-          <div key={user._id} className="flex items-center my-2">
-            <img
-              src={user.avatar_url || '/user_default.png'}
-              alt={user.username}
-              className="w-10 h-10 rounded-full mr-2"
-            />
-            <span className="text-gray-300">{user.username}</span>
+          <div key={user._id} className="flex items-center justify-between p-2 bg-gray-700 rounded-lg">
+            <div className="flex items-center space-x-4">
+              <img
+                src={user.avatar_url || '/user_default.png'}
+                alt={user.username}
+                className="w-10 h-10 rounded-full"
+              />
+              <span className="text-gray-300">{user.username}</span>
+            </div>
           </div>
         );
       })}
@@ -79,19 +81,21 @@ function Friends({ isOpen, onClose, initialTab, currentUser, allUsers, fetchCurr
   );
 
   const followingTab = (
-    <div>
+    <div className="space-y-4">
       {currentUser?.friends.following.map(userId => {
         const user = getUserInfo(userId);
         return (
-          <div key={user._id} className="flex items-center my-2">
-            <img
-              src={user.avatar_url || '/user_default.png'}
-              alt={user.username}
-              className="w-10 h-10 rounded-full mr-2"
-            />
-            <span className="text-gray-300">{user.username}</span>
+          <div key={user._id} className="flex items-center justify-between p-2 bg-gray-700 rounded-lg">
+            <div className="flex items-center space-x-4">
+              <img
+                src={user.avatar_url || '/user_default.png'}
+                alt={user.username}
+                className="w-10 h-10 rounded-full"
+              />
+              <span className="text-gray-300">{user.username}</span>
+            </div>
             <button 
-              className="ml-auto text-xs px-3 py-1 rounded-md bg-gray-500 text-white flex items-center justify-center"
+              className="text-xs px-3 py-1 rounded-md bg-gray-600 text-white flex items-center justify-center hover:bg-gray-500 transition duration-300"
               onClick={() => handleUnfollow(user._id)}
               disabled={loading[user._id]}
             >
@@ -112,31 +116,31 @@ function Friends({ isOpen, onClose, initialTab, currentUser, allUsers, fetchCurr
   }
 
   return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
-      <div ref={modalRef} className="bg-gray-800 rounded-lg p-6 w-full max-w-md">
+    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300">
+      <div ref={modalRef} className="bg-gray-800 rounded-2xl p-6 w-full max-w-lg shadow-lg">
         <div className="flex justify-end mb-4">
           <button
             onClick={onClose}
-            className="text-gray-300 hover:text-gray-500"
+            className="text-gray-300 hover:text-gray-500 text-xl"
           >
             &times;
           </button>
         </div>
-        <div className="flex justify-center mb-4">
+        <div className="flex justify-center mb-6 space-x-4">
           <button
-            className={`px-4 py-2 ${activeTab === 'followers' ? 'bg-gray-700 text-white' : 'text-gray-300'}`}
+            className={`px-4 py-2 rounded-full ${activeTab === 'followers' ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white transition duration-300'}`}
             onClick={() => setActiveTab('followers')}
           >
             Followers
           </button>
           <button
-            className={`px-4 py-2 ${activeTab === 'following' ? 'bg-gray-700 text-white' : 'text-gray-300'}`}
+            className={`px-4 py-2 rounded-full ${activeTab === 'following' ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white transition duration-300'}`}
             onClick={() => setActiveTab('following')}
           >
             Following
           </button>
         </div>
-        <div>
+        <div className="overflow-y-auto max-h-80">
           {activeTab === 'followers' ? followersTab : followingTab}
         </div>
       </div>

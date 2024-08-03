@@ -126,7 +126,7 @@ function PossibleFriends({ allUsers, currentUser, fetchCurrentUser, loading, set
                 </button>
               ) : (
                 <button 
-                  className="text-xs px-3 py-1 rounded-md bg-yellow-500 text-gray-800 flex items-center justify-center"
+                  className="text-xs px-3 py-1 rounded-md bg-yellow-500 text-gray-800 hover:bg-yellow-400 flex items-center justify-center"
                   onClick={() => handleFollow(item._id)}
                   disabled={loading[item._id]}
                 >
@@ -154,7 +154,7 @@ function PossibleFriends({ allUsers, currentUser, fetchCurrentUser, loading, set
         <button
           onClick={() => paginate(currentPage + 1)}
           disabled={isLastPage}
-          className={`mx-1 px-3 py-1 rounded ${isLastPage ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-700 text-white'}`}
+          className={`mx-1 px-3 py-1 rounded ${isLastPage ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-700 hover:bg-gray-600 text-white'}`}
         >
           Next
         </button>

@@ -7,12 +7,12 @@ function ProfileCard({ user, onOpenFriendsModal }) {
   return (
     <div className="w-full max-w-sm bg-gray-800 shadow-md rounded-3xl overflow-hidden relative flex items-center justify-center flex-col p-4">
       <img
-        src={user?.avatar_url || "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"}
+        src={user?.avatar_url || "user_default.png"}
         alt="userPic"
         className="w-full h-24 object-cover rounded-t-lg"
       />
       <img
-        src={user?.avatar_url || "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"}
+        src={user?.avatar_url || "user_default.png"}
         alt="userPic"
         className="w-20 h-20 object-cover rounded-full border-4 border-gray-700 absolute top-16 shadow-2xl"
       />
@@ -49,7 +49,7 @@ function ProfileCard({ user, onOpenFriendsModal }) {
         {user?.bio}
       </div>
       <button
-        className="text-center font-semibold w-4/5 rounded-xl bg-gray-700 py-2 mt-2 text-gray-300"
+        className="text-center font-semibold w-4/5 rounded-xl bg-gray-700 hover:bg-gray-600 py-2 mt-2 text-gray-300"
         onClick={() => window.location.href = "/profile/" + user.username}
       >
         My Profile

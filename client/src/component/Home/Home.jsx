@@ -6,11 +6,9 @@ import Hobbies from "../Hobbies/Hobbies";
 import PossibleFriends from "../PossibleFriends/PossibleFriends";
 import Friends from "../Friends/Friends";
 
-function Home({ user, setUser, allUsers, setAllUsers, fetchUserData, loading, setLoading }) {
+function Home({ user, setUser, allUsers, setAllUsers, fetchUserData, loading, setLoading, handleOpenFriendsModal }) {
   const [posts, setPosts] = useState([]);
   const [newPostAdded, setNewPostAdded] = useState(false); // State to track new post addition
-  const [isFriendsModalOpen, setIsFriendsModalOpen] = useState(false);
-  const [initialTab, setInitialTab] = useState('followers');
 
   const fetchPosts = async () => {
     const token = localStorage.getItem('token');
@@ -57,49 +55,24 @@ function Home({ user, setUser, allUsers, setAllUsers, fetchUserData, loading, se
     setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
   };
 
-  const handleOpenFriendsModal = (tab) => {
-    setInitialTab(tab);
-    setIsFriendsModalOpen(true);
-  };
-
-  const handleCloseFriendsModal = () => {
-    setIsFriendsModalOpen(false);
-  };
-
-  const handleUserChange = async () => {
-    await fetchUserData();
-    setLoading({});
-  };
-
   return (
     <div className="w-full flex items-start justify-center" style={{ background: 'linear-gradient(to right, white, black)', minHeight: '100vh' }}>
       {/* Left side components */}
       <div className="hidden xl:flex items-center justify-center flex-col p-4 w-0 md:w-1/4 sticky left-0 top-16">
         <ProfileCard user={user} onOpenFriendsModal={handleOpenFriendsModal} />
-        <Hobbies />
+        <Hobbies user={user} token={localStorage.getItem('token')} />
       </div>
 
       {/* Center side components */}
       <div className="flex items-center justify-center flex-col p-3 w-full xl:w-1/2">
         <NewPost onNewPost={handleNewPost} allUsers={allUsers} currentUser={user} />
-        <PostFeed posts={posts} currentUser={user} onDeletePost={handleDeletePost} />
+        <PostFeed posts={posts} allUsers={allUsers} onDeletePost={handleDeletePost} />
       </div>
 
       {/* Right side components */}
       <div className="hidden 2xl:flex items-center justify-center flex-col p-3 w-1/4 sticky right-0 top-16">
         {allUsers.length > 0 && user && <PossibleFriends allUsers={allUsers} currentUser={user} fetchCurrentUser={fetchUserData} loading={loading} setLoading={setLoading} />}
       </div>
-      <Friends 
-        isOpen={isFriendsModalOpen} 
-        onClose={handleCloseFriendsModal} 
-        initialTab={initialTab} 
-        currentUser={user} 
-        allUsers={allUsers}
-        fetchCurrentUser={fetchUserData} 
-        onUserChange={handleUserChange} 
-        loading={loading}
-        setLoading={setLoading}
-      />
     </div>
   );
 }

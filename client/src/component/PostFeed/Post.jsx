@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { AiOutlineHeart } from "react-icons/ai";
 import { IoIosSend } from "react-icons/io";
@@ -7,12 +8,13 @@ import Modal from 'react-modal';
 
 Modal.setAppElement('#root');
 
-function Post({ post, currentUser, onDeletePost }) {
+function Post({ post, allUsers, onDeletePost }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);  // Ref for the dropdown menu
-  const currDate = new Date(post.createdAt).toLocaleDateString();
-  const currTime = new Date(post.createdAt).toLocaleTimeString();
+  const navigate = useNavigate();
+
+  const author = allUsers.find(user => user._id === post.author);
 
   const handleDelete = async () => {
     try {
@@ -50,23 +52,29 @@ function Post({ post, currentUser, onDeletePost }) {
     };
   }, []);
 
+  const navigateToProfile = () => {
+    if (author) {
+      navigate(`/profile/${author.username}`);
+    }
+  };
+
   return (
     <div className="bg-gray-800 w-full lg:px-4 py-2 my-3 rounded-3xl flex items-center justify-center flex-col">
       {/* post top section */}
       <span className="w-full flex items-center justify-center my-2">
-        <span className="w-1/12 flex items-center justify-center">
+        <span className="w-1/12 flex items-center justify-center" onClick={navigateToProfile}>
           <img
-            src={currentUser?.avatar_url || "https://via.placeholder.com/100"}
+            src={author?.avatar_url || "user_default.png"}
             alt="userPic"
             className="lg:w-10 lg:h-10 w-8 h-8 rounded-2xl object-cover border-2 border-gray-500 cursor-pointer"
           />
         </span>
         <span className="w-3/4 flex items-start justify-center flex-col">
-          <h3 className="mx-2 text-gray-400 text-sm lg:text-base cursor-pointer font-semibold my-1">
-            {currentUser?.email || "Loading..."}
+          <h3 className="mx-2 text-gray-400 text-sm lg:text-base cursor-pointer font-semibold my-1" onClick={navigateToProfile}>
+            {author?.email || "Loading..."}
           </h3>
-          <h3 className="mx-2 text-gray-200 text-sm lg:text-lg cursor-pointer font-semibold flex items-center justify-center">
-            {currentUser?.username || "Loading..."}
+          <h3 className="mx-2 text-gray-200 text-sm lg:text-lg cursor-pointer font-semibold flex items-center justify-center" onClick={navigateToProfile}>
+            {author?.username || "Loading..."}
           </h3>
         </span>
         <span className="relative w-1/12 flex items-center justify-center">

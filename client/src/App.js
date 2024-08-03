@@ -4,15 +4,21 @@ import Auth from './component/Auth/Auth';
 import Profile from './component/Profile/Profile';
 import Header from './component/Header/Header';
 import Home from './component/Home/Home';
+import ProtectedRoute from './component/Auth/ProtectedRoute';
+import PublicRoute from './component/Auth/PublicRoute';
 
 function App() {
   const [user, setUser] = useState(null);
   const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState({});
+  const [loadingUser, setLoadingUser] = useState(true);
 
   const fetchUserData = useCallback(async () => {
     const token = localStorage.getItem('token');
-    if (!token) return;
+    if (!token) {
+      setLoadingUser(false);
+      return;
+    }
 
     try {
       const response = await fetch('http://localhost:5000/api/user/me', {
@@ -26,6 +32,8 @@ function App() {
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
+    } finally {
+      setLoadingUser(false);
     }
   }, []);
 
@@ -53,20 +61,30 @@ function App() {
     fetchAllUsers();
   }, [fetchUserData, fetchAllUsers]);
 
+  if (loadingUser) {
+    return <div>Loading...</div>; // You can add a better loading screen here
+  }
+
   return (
     <Router>
       <Routes>
-        <Route path="/auth" element={<Auth />} />
+        <Route path="/auth" element={
+          <PublicRoute user={user}>
+            <Auth />
+          </PublicRoute>
+        } />
         <Route path="*" element={
-          <WithHeader 
-            user={user} 
-            setUser={setUser} 
-            allUsers={allUsers} 
-            setAllUsers={setAllUsers} 
-            fetchUserData={fetchUserData} 
-            loading={loading} 
-            setLoading={setLoading} 
-          />
+          <ProtectedRoute user={user}>
+            <WithHeader 
+              user={user} 
+              setUser={setUser} 
+              allUsers={allUsers} 
+              setAllUsers={setAllUsers} 
+              fetchUserData={fetchUserData} 
+              loading={loading} 
+              setLoading={setLoading} 
+            />
+          </ProtectedRoute>
         } />
       </Routes>
     </Router>

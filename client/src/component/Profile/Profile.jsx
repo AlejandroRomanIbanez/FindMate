@@ -175,7 +175,7 @@ export default function Profile() {
             <div className="rounded-top text-white d-flex flex-row" style={{ backgroundColor: '#000', height: '200px' }}>
               <div className="ms-4 mt-5 d-flex flex-column" style={{ width: '150px' }}>
                 <MDBCardImage 
-                  src={user.avatar_url || "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"}
+                  src={user.avatar_url || process.env.PUBLIC_URL + "/user_default.png"}
                   alt="User avatar" 
                   className="mt-4 mb-2 img-thumbnail" 
                   fluid 
@@ -305,14 +305,12 @@ export default function Profile() {
               value={user.bio}
               onChange={handleChange}
             />
-            <div className="flex justify-center">
-              <input
-                type="submit"
-                className="px-5 py-2 my-4 text-white font-semibold rounded-md cursor-pointer"
-                value="Save changes"
-                style={{ background: 'linear-gradient(45deg, gray 0%, yellow 100%)' }}
-              />
-            </div>
+            <input
+              type="submit"
+              className="px-5 py-2 my-4 text-white font-semibold rounded-md cursor-pointer"
+              value="Save changes"
+              style={{ background: 'linear-gradient(45deg, gray 0%, yellow 100%)' }}
+            />
           </form>
         </div>
       </Modal>
