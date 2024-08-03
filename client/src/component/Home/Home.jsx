@@ -8,6 +8,7 @@ import PossibleFriends from "../PossibleFriends/PossibleFriends";
 function Home() {
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
+  const [newPostAdded, setNewPostAdded] = useState(false); // State to track new post addition
 
   const fetchUserData = async () => {
     const token = localStorage.getItem('token');
@@ -61,13 +62,17 @@ function Home() {
     fetchPosts();
   }, []);
 
+  useEffect(() => {
+    if (newPostAdded) {
+      fetchPosts();
+      setNewPostAdded(false); // Reset the flag after fetching new posts
+    }
+  }, [newPostAdded]);
+
   const handleNewPost = (newPost) => {
     setPosts((prevPosts) => [newPost, ...prevPosts]);
+    setNewPostAdded(true); // Trigger fetch for new posts
   };
-
-  useEffect(() => {
-    fetchPosts();
-  }, [posts]);
 
   return (
     <div className="w-full flex items-start justify-center" style={{ background: 'linear-gradient(to right, white, black)', minHeight: '100vh' }}>
