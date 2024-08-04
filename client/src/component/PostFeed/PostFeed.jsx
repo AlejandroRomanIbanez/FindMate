@@ -1,12 +1,13 @@
 import React from "react";
 import Post from "./Post";
 import Ad from "../Ad/Ad";
+import { useState, useMemo, useEffect } from "react";
 
 const mockAds = [
   {
     id: "ad1",
     logo_url: "https://cdn.pixabay.com/photo/2023/07/04/07/25/self-consciousness-8105584_960_720.jpg",
-    company: "Company A",
+    company: "Crypto Bro",
     title: "Check out our product",
     description: "This is an amazing product that you should check out!",
     img_url: "https://images.pexels.com/photos/6771243/pexels-photo-6771243.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
@@ -14,8 +15,8 @@ const mockAds = [
   {
     id: "ad2",
     logo_url: "https://cdn.pixabay.com/photo/2015/12/09/13/44/vector-1084755_960_720.png",
-    company: "Company B",
-    title: "Our services",
+    company: "Prolos",
+    title: "Bring order to chaos",
     description: "We provide excellent services that you can rely on.",
     img_url: "https://images.pexels.com/photos/3671145/pexels-photo-3671145.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
   }
@@ -44,6 +45,26 @@ const PostSkeleton = () => (
 );
 
 function PostFeed({ posts, allUsers, onDeletePost, loading, currentUser }) {
+  const [combinedFeed, setCombinedFeed] = useState([]);
+
+  // Memoize the ad integration logic
+  const integrateAdsWithPosts = useMemo(() => (postsToIntegrate) => {
+    const combined = [...postsToIntegrate];
+    const adCount = Math.min(mockAds.length, Math.floor(postsToIntegrate.length / 2));
+    for (let i = 0; i < adCount; i++) {
+      const adIndex = Math.floor(Math.random() * (combined.length + 1));
+      combined.splice(adIndex, 0, mockAds[i]);
+    }
+    return combined;
+  }, []);
+
+  useEffect(() => {
+    if (!loading && posts.length > 0) {
+      const integrated = integrateAdsWithPosts(posts);
+      setCombinedFeed(integrated);
+    }
+  }, [posts, loading, integrateAdsWithPosts]);
+
   if (loading) {
     return (
       <div className="w-full lg:w-4/5 my-2 lg:px-3 py-2 flex items-center justify-center flex-col-reverse">
@@ -52,14 +73,6 @@ function PostFeed({ posts, allUsers, onDeletePost, loading, currentUser }) {
         <PostSkeleton />
       </div>
     );
-  }
-
-  // Shuffle ads and integrate them with posts randomly
-  const combinedFeed = [...posts];
-  const adCount = Math.min(mockAds.length, Math.floor(posts.length / 2));
-  for (let i = 0; i < adCount; i++) {
-    const adIndex = Math.floor(Math.random() * (combinedFeed.length + 1));
-    combinedFeed.splice(adIndex, 0, mockAds[i]);
   }
 
   return (
@@ -74,5 +87,6 @@ function PostFeed({ posts, allUsers, onDeletePost, loading, currentUser }) {
     </div>
   );
 }
+
 
 export default PostFeed;

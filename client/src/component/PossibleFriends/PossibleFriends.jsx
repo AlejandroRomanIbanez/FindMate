@@ -1,28 +1,41 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { MDBSpinner } from 'mdb-react-ui-kit';
+import { SkeletonPossibleFriends } from "../Skeleton/Skeleton";
 
 function PossibleFriends({ allUsers, currentUser, fetchCurrentUser, loading, setLoading }) {
+  const [loadingFriends, setLoadingFriends] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(8);
-  const [currentUsers, setCurrentUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
+  const [currentUsers, setCurrentUsers] = useState([]);
 
-  useEffect(() => {
-    if (!allUsers || !currentUser) return;
-    
-    const filtered = allUsers
+  const filterUsers = useCallback((allUsers, currentUser) => {
+    return allUsers
       .filter(user => user._id !== currentUser._id && !currentUser.friends.following.includes(user._id))
       .sort(() => 0.5 - Math.random());
-    setFilteredUsers(filtered);
-  }, [allUsers, currentUser]);
+  }, []);
+  
+  const memoizedFilteredUsers = useMemo(() => filterUsers(allUsers, currentUser), [allUsers, currentUser]);
 
   useEffect(() => {
-    const indexOfLastUser = currentPage * usersPerPage;
-    const indexOfFirstUser = indexOfLastUser - usersPerPage;
-    const current = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
-    setCurrentUsers(current);
-  }, [currentPage, usersPerPage, filteredUsers]);
+    if (memoizedFilteredUsers.length > 0 && filteredUsers.length === 0) {
+      setFilteredUsers(memoizedFilteredUsers);
+      setLoadingFriends(false);
+    }
+  }, [memoizedFilteredUsers, filteredUsers]);
+
+  useEffect(() => {
+    const updateCurrentUsers = () => {
+      const indexOfLastUser = currentPage * usersPerPage;
+      const indexOfFirstUser = indexOfLastUser - usersPerPage;
+      setCurrentUsers(filteredUsers.slice(indexOfFirstUser, indexOfLastUser));
+    };
+
+    if (!loadingFriends) {
+      updateCurrentUsers();
+    }
+  }, [currentPage, usersPerPage, filteredUsers, loadingFriends]);
 
   const handleFollow = async (targetUserId) => {
     setLoading(prev => ({ ...prev, [targetUserId]: true }));
@@ -38,13 +51,14 @@ function PossibleFriends({ allUsers, currentUser, fetchCurrentUser, loading, set
       });
       const data = await response.json();
       if (response.ok) {
-        fetchCurrentUser(); // Re-fetch current user data
-        setLoading(prev => ({ ...prev, [targetUserId]: false }));
+        fetchCurrentUser();
       } else {
         console.error(`Error following user: ${data.error}`);
       }
     } catch (error) {
       console.error('Error following user:', error);
+    } finally {
+      setLoading(prev => ({ ...prev, [targetUserId]: false }));
     }
   };
 
@@ -62,31 +76,20 @@ function PossibleFriends({ allUsers, currentUser, fetchCurrentUser, loading, set
       });
       const data = await response.json();
       if (response.ok) {
-        fetchCurrentUser(); // Re-fetch current user data
-        setLoading(prev => ({ ...prev, [targetUserId]: false }));
+        fetchCurrentUser();
       } else {
         console.error(`Error unfollowing user: ${data.error}`);
       }
     } catch (error) {
       console.error('Error unfollowing user:', error);
+    } finally {
+      setLoading(prev => ({ ...prev, [targetUserId]: false }));
     }
   };
 
   const handleRemove = (targetUserId) => {
     setFilteredUsers(prevUsers => prevUsers.filter(user => user._id !== targetUserId));
   };
-
-  useEffect(() => {
-    const indexOfLastUser = currentPage * usersPerPage;
-    const indexOfFirstUser = indexOfLastUser - usersPerPage;
-    const current = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
-
-    if (current.length === 0 && currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    } else {
-      setCurrentUsers(current);
-    }
-  }, [filteredUsers, currentPage, usersPerPage]);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -98,50 +101,56 @@ function PossibleFriends({ allUsers, currentUser, fetchCurrentUser, loading, set
         <span>Possible Friends</span>
       </span>
 
-      {currentUsers.map((item) => (
-        <div key={item._id} className="w-full px-5">
-          <span className="w-full h-16 bg-gray-900 rounded-lg shadow-lg my-2 flex items-center justify-between p-2">
-            <span className="flex items-center">
-              <img
-                src={item.avatar_url || '/user_default.png'}
-                alt=""
-                className="w-10 h-10 border-2 border-gray-300 mx-2 rounded-lg cursor-pointer"
-              />
-              <h1 className="text-sm text-gray-300 font-semibold cursor-pointer mx-2">
-                {item.username}
-              </h1>
+      {loadingFriends ? (
+        Array.from({ length: usersPerPage }).map((_, index) => (
+          <SkeletonPossibleFriends key={index} />
+        ))
+      ) : (
+        currentUsers.map((item) => (
+          <div key={item._id} className="w-full px-5">
+            <span className="w-full h-16 bg-gray-900 rounded-lg shadow-lg my-2 flex items-center justify-between p-2">
+              <span className="flex items-center">
+                <img
+                  src={item.avatar_url || '/user_default.png'}
+                  alt=""
+                  className="w-10 h-10 border-2 border-gray-300 mx-2 rounded-lg cursor-pointer"
+                />
+                <h1 className="text-sm text-gray-300 font-semibold cursor-pointer mx-2">
+                  {item.username}
+                </h1>
+              </span>
+              <span className="flex items-center">
+                {currentUser && currentUser.friends.following.includes(item._id) ? (
+                  <button 
+                    className="text-xs px-3 py-1 rounded-md bg-gray-500 text-white flex items-center justify-center"
+                    onClick={() => handleUnfollow(item._id)}
+                    disabled={loading[item._id]}
+                  >
+                    {loading[item._id] ? (
+                      <MDBSpinner color='light' size='sm' />
+                    ) : (
+                      'Unfollow'
+                    )}
+                  </button>
+                ) : (
+                  <button 
+                    className="text-xs px-3 py-1 rounded-md bg-yellow-500 text-gray-800 hover:bg-yellow-400 flex items-center justify-center"
+                    onClick={() => handleFollow(item._id)}
+                    disabled={loading[item._id]}
+                  >
+                    {loading[item._id] ? (
+                      <MDBSpinner color='dark' size='sm' />
+                    ) : (
+                      'Follow'
+                    )}
+                  </button>
+                )}
+                <RxCross2 className="text-white cursor-pointer ml-2" onClick={() => handleRemove(item._id)} />
+              </span>
             </span>
-            <span className="flex items-center">
-              {currentUser && currentUser.friends.following.includes(item._id) ? (
-                <button 
-                  className="text-xs px-3 py-1 rounded-md bg-gray-500 text-white flex items-center justify-center"
-                  onClick={() => handleUnfollow(item._id)}
-                  disabled={loading[item._id]}
-                >
-                  {loading[item._id] ? (
-                    <MDBSpinner color='light' size='sm' />
-                  ) : (
-                    'Unfollow'
-                  )}
-                </button>
-              ) : (
-                <button 
-                  className="text-xs px-3 py-1 rounded-md bg-yellow-500 text-gray-800 hover:bg-yellow-400 flex items-center justify-center"
-                  onClick={() => handleFollow(item._id)}
-                  disabled={loading[item._id]}
-                >
-                  {loading[item._id] ? (
-                    <MDBSpinner color='dark' size='sm' />
-                  ) : (
-                    'Follow'
-                  )}
-                </button>
-              )}
-              <RxCross2 className="text-white cursor-pointer ml-2" onClick={() => handleRemove(item._id)} />
-            </span>
-          </span>
-        </div>
-      ))}
+          </div>
+        ))
+      )}
 
       <div className="flex justify-center mt-4">
         <button

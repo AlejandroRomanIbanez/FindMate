@@ -1,9 +1,11 @@
 import React from "react";
+import { ProfileCardSkeleton } from "../Skeleton/Skeleton"; // Adjust the import path as needed
 
 function ProfileCard({ user, onOpenFriendsModal }) {
   if (!user) {
-    return <div>Loading...</div>;
+    return <ProfileCardSkeleton />;
   }
+
   return (
     <div className="w-full max-w-sm bg-gray-800 shadow-md rounded-3xl overflow-hidden relative flex items-center justify-center flex-col p-4">
       <img

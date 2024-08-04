@@ -1,8 +1,10 @@
 import React from "react";
+import { MDBTooltip } from "mdb-react-ui-kit";
+import { FaAd } from 'react-icons/fa';
 
 function Ad({ ad }) {
   return (
-    <div className="bg-gray-800 w-full lg:px-4 py-2 my-3 rounded-3xl flex items-center justify-center flex-col">
+    <div className="bg-gray-800 w-full lg:px-4 py-2 my-3 rounded-3xl flex items-center justify-center flex-col relative">
       {/* ad top section */}
       <span className="w-full flex items-center justify-center my-2">
         <span className="w-1/12 flex items-center justify-center">
@@ -19,6 +21,11 @@ function Ad({ ad }) {
           <h3 className="mx-2 text-gray-200 text-sm lg:text-lg font-semibold flex items-center justify-center">
             {ad.title || "Advertisement"}
           </h3>
+        </span>
+        <span className="w-1/12 flex items-center justify-center">
+          <MDBTooltip tag='span' wrapperClass='d-inline-block' title='This is an ad'>
+            <FaAd fontSize={20} className="text-yellow-500 cursor-pointer" />
+          </MDBTooltip>
         </span>
       </span>
       <span className="text-white text-sm lg:text-base w-full px-5 my-2 font-light tracking-wider">
