@@ -8,10 +8,35 @@ import {
   MDBCardImage,
   MDBBtn,
   MDBTypography,
+  MDBTooltip,
 } from 'mdb-react-ui-kit';
 import Modal from 'react-modal';
 import { useParams } from 'react-router-dom';
 import "./Profile.css";
+import { ProfileSkeleton } from '../Skeleton/Skeleton';
+import Ad from '../Ad/Ad';
+import { FaAd } from 'react-icons/fa';
+
+const mockAds = [
+  {
+    id: "ad1",
+    logo_url: "https://cdn.pixabay.com/photo/2023/07/04/07/25/self-consciousness-8105584_960_720.jpg",
+    company: "Crypto Bro",
+    title: "Check out our product",
+    description: "This is an amazing product that you should check out!",
+    img_url: "https://images.pexels.com/photos/6771243/pexels-photo-6771243.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    isAd: true
+  },
+  {
+    id: "ad2",
+    logo_url: "https://cdn.pixabay.com/photo/2015/12/09/13/44/vector-1084755_960_720.png",
+    company: "Prolos",
+    title: "Bring order to chaos",
+    description: "We provide excellent services that you can rely on.",
+    img_url: "https://images.pexels.com/photos/3671145/pexels-photo-3671145.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    isAd: true
+  }
+];
 
 Modal.setAppElement('#root'); // Set the app element for accessibility
 
@@ -22,24 +47,20 @@ export default function Profile() {
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [modalImage, setModalImage] = useState('');
-  const [user, setUser] = useState({
-    username: '',
-    email: '',
-    password: '',
-    age: '',
-    bio: '',
-    avatar_url: '',
-    friends: {
-      followers: [],
-      following: []
-    },
-    posts: []
-  });
+  const [modalImageIsAd, setModalImageIsAd] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [combinedFeed, setCombinedFeed] = useState([]);
+  const [adsInserted, setAdsInserted] = useState(false);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     const fetchCurrentUserData = async () => {
       const token = localStorage.getItem('token');
-      if (!token) return;
+      if (!token) {
+        setLoading(false);
+        return;
+      }
 
       const response = await fetch('http://localhost:5000/api/user/me', {
         headers: {
@@ -63,9 +84,6 @@ export default function Profile() {
       });
       const data = await response.json();
       if (response.ok) {
-        setUser(data);
-
-        // Fetch the posts for the user
         const postsResponse = await fetch(`http://localhost:5000/api/post/user/${data._id}`, {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -73,23 +91,43 @@ export default function Profile() {
         });
         const postsData = await postsResponse.json();
         if (postsResponse.ok) {
-          setUser(prevUser => ({ ...prevUser, posts: postsData }));
+          data.posts = postsData;
+          setUser(data);
         } else {
           alert(postsData.error);
         }
       } else {
         alert(data.error);
       }
+      setLoading(false);
     };
 
-    fetchCurrentUserData();
-    fetchUserData();
+    const fetchData = async () => {
+      await fetchCurrentUserData();
+      await fetchUserData();
+    };
+
+    fetchData();
   }, [username]);
+
+  useEffect(() => {
+    if (user && user.posts && !adsInserted) {
+      const combined = [...user.posts];
+      const adCount = Math.min(mockAds.length, Math.floor(user.posts.length / 2));
+      for (let i = 0; i < adCount; i++) {
+        const adIndex = Math.floor(Math.random() * (combined.length + 1));
+        combined.splice(adIndex, 0, mockAds[i]);
+      }
+      setCombinedFeed(combined);
+      setAdsInserted(true);
+    }
+  }, [user, adsInserted]);
 
   const toggleEditProfileModal = () => setShowEditProfileModal(!showEditProfileModal);
 
-  const toggleImageModal = (image = '') => {
+  const toggleImageModal = (image = '', isAd = false) => {
     setModalImage(image);
+    setModalImageIsAd(isAd);
     setShowImageModal(!showImageModal);
   };
 
@@ -129,43 +167,43 @@ export default function Profile() {
     }
   };
 
-  const renderPosts = () => {
-    if (user.posts.length === 1) {
-      return (
-        <MDBRow className="g-2 justify-content-center">
-          <MDBCol className="mb-2" md="6">
-            <div className='bg-image hover-overlay ripple shadow-1-strong rounded'>
+  const renderPosts = () => (
+    <MDBRow className="g-2">
+      {combinedFeed.slice(0, showAll ? combinedFeed.length : 4).map((item, index) =>
+        item.img_url ? (
+          <MDBCol key={index} className="mb-2" md="6">
+            <div className='bg-image hover-overlay ripple shadow-1-strong rounded' style={{ position: 'relative' }}>
               <MDBCardImage
-                src={user.posts[0].img_url}
-                alt="Single post"
-                className="w-100 rounded-3"
-                onClick={() => toggleImageModal(user.posts[0].img_url)}
+                src={item.img_url}
+                alt={`image ${index + 1}`}
+                className="w-100 rounded-3 post-image"
+                onClick={() => toggleImageModal(item.img_url, item.isAd)}
                 style={{ cursor: 'pointer' }}
               />
+              {item.isAd && (
+                <span className="absolute top-2 right-2">
+                  <MDBTooltip tag='span' wrapperClass='d-inline-block' title='This is an ad'>
+                    <FaAd fontSize={20} className="text-yellow-500 cursor-pointer" />
+                  </MDBTooltip>
+                </span>
+              )}
             </div>
           </MDBCol>
-        </MDBRow>
-      );
-    } else {
-      return (
-        <MDBRow className="g-2">
-          {user.posts.slice(0, 4).map((post, index) => (
-            <MDBCol key={index} className="mb-2" md="6">
-              <div className='bg-image hover-overlay ripple shadow-1-strong rounded'>
-                <MDBCardImage
-                  src={post.img_url}
-                  alt={`image ${index + 1}`}
-                  className="w-100 rounded-3"
-                  onClick={() => toggleImageModal(post.img_url)}
-                  style={{ cursor: 'pointer' }}
-                />
-              </div>
-            </MDBCol>
-          ))}
-        </MDBRow>
-      );
-    }
-  };
+        ) : (
+          <MDBCol key={item.id} className="mb-2" md="6">
+            <Ad ad={item} isProfile={true} />
+          </MDBCol>
+      ))}
+    </MDBRow>
+  );
+
+  if (loading) {
+    return (
+      <div style={{ background: 'linear-gradient(to right, #4b6cb7, #182848)', minHeight: '100vh' }}>
+        <ProfileSkeleton />
+      </div>
+    );
+  }
 
   return (
     <div style={{ background: 'linear-gradient(to right, #4b6cb7, #182848)', minHeight: '100vh' }}>
@@ -232,7 +270,11 @@ export default function Profile() {
               </div>
               <div className="d-flex justify-content-between align-items-center mb-4">
                 <MDBCardText className="lead fw-normal mb-0">Recent photos</MDBCardText>
-                <MDBCardText className="mb-0"><a href="#!" className="text-muted">Show all</a></MDBCardText>
+                <MDBCardText className="mb-0">
+                  <a href="#!" className="text-muted" onClick={() => setShowAll(!showAll)}>
+                    {showAll ? "Show less" : "Show all"}
+                  </a>
+                </MDBCardText>
               </div>
               {renderPosts()}
             </MDBCardBody>
@@ -322,8 +364,15 @@ export default function Profile() {
         className="image-modal-content"
         overlayClassName="modal-overlay"
       >
-        <div className="image-modal-inner">
+        <div className="image-modal-inner" style={{ position: 'relative' }}>
           <img src={modalImage} alt="Modal" className="img-fluid" />
+          {modalImageIsAd && (
+            <span className="absolute top-2 right-2">
+              <MDBTooltip tag='span' wrapperClass='d-inline-block' title='This is an ad'>
+                <FaAd fontSize={20} className="text-yellow-500 cursor-pointer" />
+              </MDBTooltip>
+            </span>
+          )}
         </div>
       </Modal>
     </div>

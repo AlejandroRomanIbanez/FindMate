@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { HiHome, HiOutlineHome } from 'react-icons/hi';
-import { FaRegUser, FaUser } from 'react-icons/fa';
-import { FaAngleDown, FaPowerOff } from 'react-icons/fa';
+import { FaRegUser, FaUser, FaAngleDown, FaPowerOff } from 'react-icons/fa';
 import Search from '../Search/Search';
+import { HeaderSkeleton } from '../Skeleton/Skeleton';
 
-function Header({ user, setUser, allUsers, loading, setLoading, fetchUserData }) {
+function Header({ user, setUser, allUsers, setLoading, fetchUserData }) {
+  const [loading, setLoadingState] = useState(true);
   const [showMenu, setShowMenu] = useState(false);
   const [hoveredIcon, setHoveredIcon] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -27,6 +29,7 @@ function Header({ user, setUser, allUsers, loading, setLoading, fetchUserData })
         const data = await response.json();
         if (response.ok) {
           setUser(data);
+          setLoadingState(false); // Set loading state to false when data is fetched
         } else {
           handleLogout();
         }
@@ -48,6 +51,10 @@ function Header({ user, setUser, allUsers, loading, setLoading, fetchUserData })
     navigate(path);
   };
 
+  if (loading) {
+    return <HeaderSkeleton />;
+  }
+
   return (
     <div className="w-full flex items-center justify-around py-2 sticky top-0 z-50 bg-black">
       {/* logo and Search input */}
@@ -68,7 +75,7 @@ function Header({ user, setUser, allUsers, loading, setLoading, fetchUserData })
           onMouseLeave={() => setHoveredIcon('')}
           onClick={() => handleNavigation('/')}
         >
-          {hoveredIcon === 'home' ? <HiHome className="text-white" /> : <HiOutlineHome className="text-white" />}
+          {location.pathname === '/' || hoveredIcon === 'home' ? <HiHome className="text-white" /> : <HiOutlineHome className="text-white" />}
         </span>
         <span
           className="text-lg mx-2 cursor-pointer"
@@ -76,7 +83,7 @@ function Header({ user, setUser, allUsers, loading, setLoading, fetchUserData })
           onMouseLeave={() => setHoveredIcon('')}
           onClick={() => handleNavigation(`/profile/${user?.username}`)}
         >
-          {hoveredIcon === 'user' ? <FaUser className="text-white" /> : <FaRegUser className="text-white" />}
+          {location.pathname === `/profile/${user?.username}` || hoveredIcon === 'user' ? <FaUser className="text-white" /> : <FaRegUser className="text-white" />}
         </span>
       </span>
 

@@ -81,7 +81,7 @@ function PostFeed({ posts, allUsers, onDeletePost, loading, currentUser }) {
         item._id ? (
           <Post key={item._id} post={item} allUsers={allUsers} onDeletePost={onDeletePost} currentUser={currentUser} />
         ) : (
-          <Ad key={item.id} ad={item} />
+          <Ad key={item.id} ad={item} isProfile={false} />
         )
       )}
     </div>

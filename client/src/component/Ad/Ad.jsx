@@ -1,8 +1,9 @@
+// Ad.js
 import React from "react";
 import { MDBTooltip } from "mdb-react-ui-kit";
 import { FaAd } from 'react-icons/fa';
 
-function Ad({ ad }) {
+function Ad({ ad, isProfile }) {
   return (
     <div className="bg-gray-800 w-full lg:px-4 py-2 my-3 rounded-3xl flex items-center justify-center flex-col relative">
       {/* ad top section */}
@@ -32,12 +33,19 @@ function Ad({ ad }) {
         {ad.description}
       </span>
       {/* ad image section */}
-      <span className="w-full px-5 my-4">
+      <span className="w-full px-5 my-4 relative">
         <img
           src={ad.img_url}
           alt="ad"
           className="w-full h-72 md:h-96 lg:h-[36rem] object-cover rounded-2xl"
         />
+        {isProfile && (
+          <span className="absolute top-2 right-2">
+            <MDBTooltip tag='span' wrapperClass='d-inline-block' title='This is an ad'>
+              <FaAd fontSize={20} className="text-yellow-500 cursor-pointer" />
+            </MDBTooltip>
+          </span>
+        )}
       </span>
     </div>
   );

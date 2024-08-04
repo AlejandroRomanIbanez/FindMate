@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { MdClose } from "react-icons/md";
+import { HobbiesSkeleton } from "../Skeleton/Skeleton"; // Adjust the import path as needed
 
 function Hobbies({ user, token }) {
   const [hobbies, setHobbies] = useState([]);
   const [newHobby, setNewHobby] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchHobbies();
@@ -24,6 +26,8 @@ function Hobbies({ user, token }) {
       }
     } catch (error) {
       console.error('Error fetching hobbies:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -71,6 +75,10 @@ function Hobbies({ user, token }) {
     }
   };
 
+  if (loading) {
+    return <HobbiesSkeleton />;
+  }
+
   return (
     <div className="w-full max-w-sm bg-gray-800 shadow-md rounded-3xl overflow-hidden relative flex items-center justify-center flex-col p-4 my-5">
       <span className="w-full px-5 font-bold text-xl text-gray-300 flex items-center justify-center">
@@ -103,7 +111,7 @@ function Hobbies({ user, token }) {
                 onClick={() => deleteHobby(item)}
               >
                 <MdClose
-                  className="text-black hover:textwh"
+                  className="text-black hover:text-white"
                   size={12}
                 />
               </div>
