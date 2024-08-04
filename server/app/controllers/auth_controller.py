@@ -16,11 +16,13 @@ def register():
         Returns:
             tuple: JSON response and HTTP status code.
     """
-    data = UserRegistration(**request.get_json())
+    try:
+        data = UserRegistration(**request.get_json())
+    except ValidationError as e:
+        return jsonify({'error': 'Invalid input. Please check your fields and try again.'}), 422
+
     try:
         response, status = register_user(data)
-    except ValidationError as e:
-        return jsonify({'error': str(e)}), 422
     except UserAlreadyExistsError as e:
         return jsonify({'error': str(e)}), 400
     except ValueError as e:
@@ -40,11 +42,12 @@ def login():
     Returns:
         tuple: JSON response and HTTP status code.
     """
-    data = UserLogin(**request.get_json())
+    try:
+        data = UserLogin(**request.get_json())
+    except ValidationError:
+        return jsonify({'error': 'Invalid input. Please check your fields and try again.'}), 422
     try:
         user = login_user(data)
-    except ValidationError as e:
-        return jsonify({'error': str(e)}), 422
     except UserNotFoundError as e:
         return jsonify({'error': str(e)}), 404
     except IncorrectPasswordError as e:

@@ -1,13 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { AiOutlineHeart } from "react-icons/ai";
-import { IoIosSend } from "react-icons/io";
-import { FaRegCommentDots } from "react-icons/fa";
 import Modal from 'react-modal';
 
 Modal.setAppElement('#root');
 
-function Post({ post, allUsers, onDeletePost }) {
+function Post({ post, allUsers, onDeletePost, currentUser }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);  // Ref for the dropdown menu
@@ -69,26 +66,28 @@ function Post({ post, allUsers, onDeletePost }) {
             {author?.username || "Loading..."}
           </h3>
         </span>
-        <span className="relative w-1/12 flex items-center justify-center">
-          <BsThreeDotsVertical
-            fontSize={22}
-            className="text-white cursor-pointer my-2 rotate-90"
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          />
-          {isDropdownOpen && (
-            <div
-              ref={dropdownRef}
-              className="absolute right-0 mt-2 w-48 bg-gray-700 rounded-md shadow-lg py-1 z-50"
-            >
-              <button
-                className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-600"
-                onClick={() => setIsModalOpen(true)}
+        {currentUser._id === post.author && (
+          <span className="relative w-1/12 flex items-center justify-center">
+            <BsThreeDotsVertical
+              fontSize={22}
+              className="text-white cursor-pointer my-2 rotate-90"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            />
+            {isDropdownOpen && (
+              <div
+                ref={dropdownRef}
+                className="absolute right-0 mt-2 w-48 bg-gray-700 rounded-md shadow-lg py-1 z-50"
               >
-                Delete Post
-              </button>
-            </div>
-          )}
-        </span>
+                <button
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-600"
+                  onClick={() => setIsModalOpen(true)}
+                >
+                  Delete Post
+                </button>
+              </div>
+            )}
+          </span>
+        )}
       </span>
       <span className="text-white text-sm lg:text-base w-full px-5 my-2 font-light tracking-wider">
         {post.content}

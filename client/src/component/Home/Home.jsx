@@ -81,7 +81,7 @@ function Home({ user, setUser, allUsers, setAllUsers, fetchUserData, loading, se
       {/* Center side components */}
       <div className="flex items-center justify-center flex-col p-3 w-full xl:w-1/2">
         <NewPost onNewPost={handleNewPost} allUsers={allUsers} currentUser={user} />
-        <PostFeed posts={posts} allUsers={allUsers} onDeletePost={handleDeletePost} loading={loadingPosts} />
+        <PostFeed posts={posts} allUsers={allUsers} onDeletePost={handleDeletePost} loading={loadingPosts} currentUser={user} />
       </div>
 
       {/* Right side components */}

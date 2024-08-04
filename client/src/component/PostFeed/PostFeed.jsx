@@ -43,7 +43,7 @@ const PostSkeleton = () => (
   </div>
 );
 
-function PostFeed({ posts, allUsers, onDeletePost, loading }) {
+function PostFeed({ posts, allUsers, onDeletePost, loading, currentUser }) {
   if (loading) {
     return (
       <div className="w-full lg:w-4/5 my-2 lg:px-3 py-2 flex items-center justify-center flex-col-reverse">
@@ -54,7 +54,7 @@ function PostFeed({ posts, allUsers, onDeletePost, loading }) {
     );
   }
 
-  // Combine posts and ads, and shuffle the ads
+  // Shuffle ads and integrate them with posts randomly
   const combinedFeed = [...posts];
   const adCount = Math.min(mockAds.length, Math.floor(posts.length / 2));
   for (let i = 0; i < adCount; i++) {
@@ -66,7 +66,7 @@ function PostFeed({ posts, allUsers, onDeletePost, loading }) {
     <div className="w-full lg:w-4/5 my-2 lg:px-3 py-2 flex items-center justify-center flex-col-reverse">
       {combinedFeed.map((item) =>
         item._id ? (
-          <Post key={item._id} post={item} allUsers={allUsers} onDeletePost={onDeletePost} />
+          <Post key={item._id} post={item} allUsers={allUsers} onDeletePost={onDeletePost} currentUser={currentUser} />
         ) : (
           <Ad key={item.id} ad={item} />
         )

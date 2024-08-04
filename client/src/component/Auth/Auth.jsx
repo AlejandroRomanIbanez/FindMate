@@ -20,6 +20,7 @@ function Auth() {
     const [error, setError] = useState('');  // New state for error handling
 
     const handleLogin = async () => {
+        setError(''); // Clear previous errors
         try {
             const response = await fetch('http://localhost:5000/api/auth/login', {
                 method: 'POST',
@@ -32,15 +33,18 @@ function Auth() {
             if (response.ok) {
                 localStorage.setItem('token', data.access_token);
                 window.location.href = '/';
+            } else if (data.errors) {
+                setError(data.errors[0].msg);
             } else {
                 setError(data.error || 'Login failed. Please try again.');
             }
         } catch (error) {
-            setError('An unexpected error occurred.');
+            setError('An unexpected error occurred. Please try again later.');
         }
     };
 
     const handleSignUp = async () => {
+        setError(''); // Clear previous errors
         try {
             const response = await fetch('http://localhost:5000/api/auth/register', {
                 method: 'POST',
@@ -52,11 +56,13 @@ function Auth() {
             const data = await response.json();
             if (response.ok) {
                 setIsLogin(true);
+            } else if (data.errors) {
+                setError(data.errors[0].msg);
             } else {
                 setError(data.error || 'Registration failed. Please try again.');
             }
         } catch (error) {
-            setError('An unexpected error occurred.');
+            setError('An unexpected error occurred. Please try again later.');
         }
     };
 
