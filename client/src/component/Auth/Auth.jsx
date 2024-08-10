@@ -15,12 +15,12 @@ function Auth() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
-    const [age, setAge] = useState('');
+    const [dateOfBirth, setDateOfBirth] = useState('');
     const [bio, setBio] = useState('');
-    const [error, setError] = useState('');  // New state for error handling
+    const [error, setError] = useState('');
 
     const handleLogin = async () => {
-        setError(''); // Clear previous errors
+        setError('');
         try {
             const response = await fetch('http://localhost:5000/api/auth/login', {
                 method: 'POST',
@@ -46,12 +46,13 @@ function Auth() {
     const handleSignUp = async () => {
         setError(''); // Clear previous errors
         try {
+            const formattedDate = dateOfBirth;
             const response = await fetch('http://localhost:5000/api/auth/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ username, email, password, age: parseInt(age), bio })
+                body: JSON.stringify({ username, email, password, date_of_birth: formattedDate, bio }) 
             });
             const data = await response.json();
             if (response.ok) {
@@ -76,7 +77,7 @@ function Auth() {
                             {!isLogin && (
                                 <>
                                     <MDBInput wrapperClass='mb-4' label='Username' id='form1' type='text' value={username} onChange={(e) => setUsername(e.target.value)} />
-                                    <MDBInput wrapperClass='mb-4' label='Age' id='form2' type='number' value={age} onChange={(e) => setAge(e.target.value)} />
+                                    <MDBInput wrapperClass='mb-4' label='Date of Birth' id='form2' type='date' value={dateOfBirth} onChange={(e) => setDateOfBirth(e.target.value)} />  {/* Date input */}
                                     <MDBInput wrapperClass='mb-4' label='Bio' id='form3' type='text' value={bio} onChange={(e) => setBio(e.target.value)} />
                                 </>
                             )}

@@ -1,6 +1,13 @@
+from datetime import datetime
+
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import mongo
 from app.utils.custom_errors import UserAlreadyExistsError, UserNotFoundError, IncorrectPasswordError
+
+
+def calculate_age(born):
+    today = datetime.today()
+    return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
 
 
 def register_user(data):
@@ -19,21 +26,28 @@ def register_user(data):
     username = data.username
     email = data.email
     password = generate_password_hash(data.password)
-    age = data.age
+    date_of_birth = data.date_of_birth
     bio = data.bio
+    age = calculate_age(date_of_birth)
+
+    if age < 16:
+        return {'error': 'User must be at least 16 years old to register.'}, 400
 
     if mongo.dbs.users.find_one({'username': username}):
         raise UserAlreadyExistsError()
 
-    mongo.dbs.users.insert_one({'avatar_url': '',
-                               'email': email,
-                               'username': username,
-                               'password': password,
-                               'age': age,
-                               'bio': bio,
-                               'isPaid': False,
-                               'friends': {'followers': [], 'following': []},
-                               'posts': []})
+    mongo.dbs.users.insert_one({
+        'avatar_url': '',
+        'email': email,
+        'username': username,
+        'password': password,
+        'date_of_birth': date_of_birth.isoformat(),
+        'bio': bio,
+        'isPaid': False,
+        'friends': {'followers': [], 'following': []},
+        'posts': [],
+        'age': age
+    })
     return {'message': 'User registered successfully'}, 201
 
 

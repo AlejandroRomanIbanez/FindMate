@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel, Field
 from typing import List, Dict, Optional
 from ..helpers import to_dict
@@ -16,6 +18,7 @@ class User(BaseModel):
     username: str = Field(..., min_length=1, max_length=50)
     email: str
     password: str = Field(..., min_length=6)
+    date_of_birth: datetime
     age: int
     bio: str = Field(..., min_length=1, max_length=100)
     isPaid: bool
@@ -31,8 +34,8 @@ class UserRegistration(BaseModel):
     username: str = Field(..., min_length=1, max_length=50)
     email: str
     password: str = Field(..., min_length=6)
-    age: int
-    bio: str = Field(..., min_length=1, max_length=100)
+    date_of_birth: datetime
+    bio: Optional[str] = Field(None, max_length=100)
 
 
 class UserLogin(BaseModel):
