@@ -53,6 +53,10 @@ export default function Profile() {
   const [combinedFeed, setCombinedFeed] = useState([]);
   const [adsInserted, setAdsInserted] = useState(false);
   const [showAll, setShowAll] = useState(false);
+  const [bioCharCount, setBioCharCount] = useState(0);
+  const [bioError, setBioError] = useState(false);
+
+  const MAX_CHARS = 100;
 
   useEffect(() => {
     const fetchCurrentUserData = async () => {
@@ -123,7 +127,12 @@ export default function Profile() {
     }
   }, [user, adsInserted]);
 
-  const toggleEditProfileModal = () => setShowEditProfileModal(!showEditProfileModal);
+  const toggleEditProfileModal = () => {
+    setShowEditProfileModal(!showEditProfileModal);
+    if (user && user.bio) {
+      setBioCharCount(user.bio.length);
+    }
+  };
 
   const toggleImageModal = (image = '', isAd = false) => {
     setModalImage(image);
@@ -144,11 +153,24 @@ export default function Profile() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setUser(prevUser => ({ ...prevUser, [name]: value }));
+    if (name === 'bio') {
+      if (value.length <= MAX_CHARS) {
+        setBioCharCount(value.length);
+        setBioError(false);
+        setUser(prevUser => ({ ...prevUser, bio: value }));
+      } else {
+        setBioError(true);
+      }
+    } else {
+      setUser(prevUser => ({ ...prevUser, [name]: value }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (bioError) {
+      return;
+    }
     const token = localStorage.getItem('token');
     const response = await fetch('http://localhost:5000/api/user/edit', {
       method: 'PUT',
@@ -343,15 +365,24 @@ export default function Profile() {
             <textarea
               name="bio"
               placeholder="Bio..."
-              className="w-full my-3 bg-transparent border border-gray-900 rounded px-2 text-sm outline-none py-2 placeholder:text-gray-300"
+              className={`w-full my-3 bg-transparent rounded px-2 text-sm outline-none py-2 placeholder:text-gray-300 ${bioError ? 'border-2 border-red-500' : 'border border-gray-900'}`}
               value={user.bio}
               onChange={handleChange}
+              style={{ 
+                borderColor: bioError ? 'red' : 'gray',
+                borderWidth: bioError ? '2px' : '1px'
+              }}
             />
+            <div className="flex justify-between items-center text-sm">
+              <span className={bioError ? 'text-red-500' : 'text-gray-300'}>
+                {bioError ? 'You have reached the limit to talk about you.' : `Words: ${bioCharCount}/${MAX_CHARS}`}
+              </span>
+            </div>
             <input
               type="submit"
-              className="px-5 py-2 my-4 text-white font-semibold rounded-md cursor-pointer"
+              className={`px-5 py-2 my-4 font-semibold rounded-md cursor-pointer ${bioError ? 'bg-gray-500 text-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-gray-500 to-yellow-500 text-white'}`}
               value="Save changes"
-              style={{ background: 'linear-gradient(45deg, gray 0%, yellow 100%)' }}
+              disabled={bioError}
             />
           </form>
         </div>
