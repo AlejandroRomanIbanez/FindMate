@@ -34,7 +34,7 @@ const Search = ({ user, allUsers, loading, setLoading, fetchUserData }) => {
     setLoading(prev => ({ ...prev, [targetUserId]: true }));
 
     try {
-      const response = await fetch('http://localhost:5000/api/user/add_friend', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_SERVER}/api/user/add_friend`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -59,7 +59,7 @@ const Search = ({ user, allUsers, loading, setLoading, fetchUserData }) => {
     setLoading(prev => ({ ...prev, [targetUserId]: true }));
 
     try {
-      const response = await fetch('http://localhost:5000/api/user/remove_friend', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_SERVER}/api/user/remove_friend`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

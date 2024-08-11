@@ -21,7 +21,7 @@ function Header({ user, setUser, allUsers, setLoading, fetchUserData }) {
       }
 
       try {
-        const response = await fetch('http://localhost:5000/api/user/me', {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_SERVER}/api/user/me`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -106,7 +106,9 @@ function Header({ user, setUser, allUsers, setLoading, fetchUserData }) {
         {/* dropdown menu */}
         {showMenu && (
           <div className="absolute w-32 h-36 shadow-xl top-10 right-0 flex items-center justify-center flex-col bg-black/90 rounded-md">
-            <li className="w-full h-1/4 shadow flex items-center justify-start list-none px-1 text-white text-xs font-bold hover:bg-gray-900 transition-all duration-300">
+            <li 
+              onClick={() => handleNavigation(`/profile/${user?.username}`)}
+              className="w-full h-1/4 shadow flex items-center justify-start list-none px-1 text-white text-xs font-bold hover:bg-gray-900 transition-all duration-300">
               <FaUser fontSize={16} className="mx-2" />
               Profile
             </li>

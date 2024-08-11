@@ -41,7 +41,7 @@ function PossibleFriends({ allUsers, currentUser, fetchCurrentUser, loading, set
     setLoading(prev => ({ ...prev, [targetUserId]: true }));
 
     try {
-      const response = await fetch('http://localhost:5000/api/user/add_friend', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_SERVER}/api/user/add_friend`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -66,7 +66,7 @@ function PossibleFriends({ allUsers, currentUser, fetchCurrentUser, loading, set
     setLoading(prev => ({ ...prev, [targetUserId]: true }));
 
     try {
-      const response = await fetch('http://localhost:5000/api/user/remove_friend', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_SERVER}/api/api/user/remove_friend`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

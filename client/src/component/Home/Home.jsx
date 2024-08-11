@@ -20,7 +20,7 @@ function Home({ user, setUser, allUsers, setAllUsers, fetchUserData, loading, se
 
     try {
       setLoadingPosts(true);
-      const response = await fetch('http://localhost:5000/api/post/all', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_SERVER}/api/post/all`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

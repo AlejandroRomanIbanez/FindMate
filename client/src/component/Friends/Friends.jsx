@@ -32,7 +32,7 @@ function Friends({ isOpen, onClose, initialTab, currentUser, allUsers, fetchCurr
     setLoading(prev => ({ ...prev, [targetUserId]: true }));
 
     try {
-      const response = await fetch('http://localhost:5000/api/user/remove_friend', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_SERVER}/api/user/remove_friend`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

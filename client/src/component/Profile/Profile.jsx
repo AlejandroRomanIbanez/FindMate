@@ -71,7 +71,7 @@ export default function Profile() {
         return;
       }
 
-      const response = await fetch('http://localhost:5000/api/user/me', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_SERVER}/api/user/me`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -86,7 +86,7 @@ export default function Profile() {
 
     const fetchUserData = async () => {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/user/${username}`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_SERVER}/api/user/${username}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -94,7 +94,7 @@ export default function Profile() {
       const data = await response.json();
       console.log(data._id);
       if (response.ok) {
-        const postsResponse = await fetch(`http://localhost:5000/api/post/user/${data._id}`, {
+        const postsResponse = await fetch(`${process.env.REACT_APP_BACKEND_SERVER}/api/post/user/${data._id}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -182,7 +182,7 @@ export default function Profile() {
       return;
     }
     const token = localStorage.getItem('token');
-    const response = await fetch('http://localhost:5000/api/user/edit', {
+    const response = await fetch(`${process.env.REACT_APP_BACKEND_SERVER}/api/user/edit`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -201,7 +201,7 @@ export default function Profile() {
 
   const handleUpgrade = async () => {
     const token = localStorage.getItem('token');
-    const response = await fetch('http://localhost:5000/api/user/buy_sub', {
+    const response = await fetch(`${process.env.REACT_APP_BACKEND_SERVER}/api/user/buy_sub`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`
@@ -299,7 +299,7 @@ export default function Profile() {
         <MDBCol lg="9" xl="7">
           <MDBCard>
             <div className="rounded-top text-white d-flex flex-row" style={{ backgroundColor: '#000', height: '200px' }}>
-              <div className="ms-4 mt-5 d-flex flex-column" style={{ width: '150px' }}>
+              <div className="ms-4 mt-5 d-flex flex-column" style={{ width: '150px', height: '500px' }}>
                 <MDBCardImage 
                   src={user.avatar_url || process.env.PUBLIC_URL + "/user_default.png"}
                   alt="User avatar" 
@@ -331,7 +331,7 @@ export default function Profile() {
                     className="mt-2"
                     onClick={toggleUpgradeModal}
                   >
-                    Upgrade Plan
+                    {user.isPaid ? "Subscription" : "Upgrade Plan"}
                   </MDBBtn>
                 </>
                 )}

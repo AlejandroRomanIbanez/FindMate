@@ -13,7 +13,7 @@ function Hobbies({ user, token }) {
 
   const fetchHobbies = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/user/hobbies', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_SERVER}/api/user/hobbies`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -34,7 +34,7 @@ function Hobbies({ user, token }) {
   const addHobby = async () => {
     if (!newHobby) return;
     try {
-      const response = await fetch('http://localhost:5000/api/user/hobbies', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_SERVER}/api/user/hobbies`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -56,7 +56,7 @@ function Hobbies({ user, token }) {
 
   const deleteHobby = async (hobby) => {
     try {
-      const response = await fetch('http://localhost:5000/api/user/hobbies', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_SERVER}/api/user/hobbies`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

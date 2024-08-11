@@ -21,7 +21,7 @@ function App() {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/user/me', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_SERVER}/api/user/me`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
@@ -42,7 +42,7 @@ function App() {
     if (!token) return;
 
     try {
-      const response = await fetch('http://localhost:5000/api/user/all', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_SERVER}/api/user/all`, {	
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();

@@ -46,7 +46,7 @@ const UpgradeModal = ({ isOpen, onRequestClose, modalMessage  }) => {
       if (isOpen) {
         const fetchSubscriptionDetails = async () => {
           try {
-            const response = await fetch('http://localhost:5000/api/user/me', {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_SERVER}/api/user/me`, {
               headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
               },
@@ -128,7 +128,7 @@ const UpgradeModal = ({ isOpen, onRequestClose, modalMessage  }) => {
     const handlePayment = async () => {
       if (validateInputs()) {
         try {
-          const response = await fetch('http://localhost:5000/api/user/buy_sub', {
+          const response = await fetch(`${process.env.REACT_APP_BACKEND_SERVER}/api/user/buy_sub`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -182,7 +182,7 @@ const UpgradeModal = ({ isOpen, onRequestClose, modalMessage  }) => {
 
     const confirmCancelSubscription = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/user/cancel_sub', {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_SERVER}/api/user/cancel_sub`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
