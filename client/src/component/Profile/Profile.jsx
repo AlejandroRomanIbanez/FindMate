@@ -9,6 +9,8 @@ import {
   MDBBtn,
   MDBTypography,
   MDBTooltip,
+  MDBInput,
+  MDBIcon,
 } from 'mdb-react-ui-kit';
 import Modal from 'react-modal';
 import { useParams } from 'react-router-dom';
@@ -16,6 +18,7 @@ import "./Profile.css";
 import { ProfileSkeleton } from '../Skeleton/Skeleton';
 import Ad from '../Ad/Ad';
 import { FaAd } from 'react-icons/fa';
+import UpgradeModal from '../Modals/UpgradeModal';
 
 const mockAds = [
   {
@@ -48,6 +51,7 @@ export default function Profile() {
   const [showImageModal, setShowImageModal] = useState(false);
   const [modalImage, setModalImage] = useState('');
   const [modalImageIsAd, setModalImageIsAd] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [combinedFeed, setCombinedFeed] = useState([]);
@@ -134,6 +138,10 @@ export default function Profile() {
     }
   };
 
+  const toggleUpgradeModal = () => {
+    setShowUpgradeModal(!showUpgradeModal);
+  };
+
   const toggleImageModal = (image = '', isAd = false) => {
     setModalImage(image);
     setModalImageIsAd(isAd);
@@ -184,6 +192,24 @@ export default function Profile() {
     if (response.ok) {
       alert('Profile updated successfully');
       toggleEditProfileModal();
+    } else {
+      alert(data.error);
+    }
+  };
+
+  const handleUpgrade = async () => {
+    const token = localStorage.getItem('token');
+    const response = await fetch('http://localhost:5000/api/user/buy_sub', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    const data = await response.json();
+    if (response.ok) {
+      alert('Subscription upgraded successfully');
+      toggleUpgradeModal();
+      setCurrentUser(prev => ({ ...prev, isPaid: true }));
     } else {
       alert(data.error);
     }
@@ -242,6 +268,7 @@ export default function Profile() {
                   style={{ width: '150px', zIndex: '1' }} 
                 />
                 {currentUser && currentUser.username === user.username && (
+                  <>
                   <MDBBtn 
                     outline 
                     color="dark" 
@@ -259,6 +286,14 @@ export default function Profile() {
                   >
                     Edit profile
                   </MDBBtn>
+                  <MDBBtn 
+                    color="warning" 
+                    className="mt-2"
+                    onClick={toggleUpgradeModal}
+                  >
+                    Upgrade Plan
+                  </MDBBtn>
+                </>
                 )}
               </div>
               <div className="ms-3" style={{ marginTop: '115px' }}>
@@ -388,6 +423,7 @@ export default function Profile() {
         </div>
       </Modal>
 
+      <UpgradeModal isOpen={showUpgradeModal} onRequestClose={toggleUpgradeModal}/>
       <Modal
         isOpen={showImageModal}
         onRequestClose={() => setShowImageModal(false)}

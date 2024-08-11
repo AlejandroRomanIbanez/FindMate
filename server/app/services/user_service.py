@@ -157,3 +157,52 @@ def buy_sub(user_id):
         return {'error': 'User not found'}, 404
 
     return {'message': 'Subscription purchased successfully'}, 200
+
+
+def calculate_refund(subscription_start, subscription_end, total_amount):
+    now = datetime.now(timezone.utc)
+
+    if now >= subscription_end:
+        return 0.0
+
+    remaining_duration = (subscription_end - now).total_seconds()
+    total_duration = (subscription_end - subscription_start).total_seconds()
+
+    if total_duration <= 0:
+        return 0.0
+
+    refund_amount = total_amount * (remaining_duration / total_duration)
+    return round(refund_amount, 2)
+
+
+def cancel_subscription(user_id):
+    user = mongo.social.users.find_one({'_id': ObjectId(user_id)})
+    if not user or not user.get('isPaid', False):
+        return {'error': 'No active subscription found'}, 404
+
+    subscription_start = user['subscription_start_date']
+    subscription_end = user['subscription_end_date']
+
+
+    if subscription_start.tzinfo is None:
+        subscription_start = subscription_start.replace(tzinfo=timezone.utc)
+    if subscription_end.tzinfo is None:
+        subscription_end = subscription_end.replace(tzinfo=timezone.utc)
+
+    total_amount = 9.99
+
+    refund_amount = calculate_refund(subscription_start, subscription_end, total_amount)
+
+    result = mongo.social.users.update_one(
+        {'_id': ObjectId(user_id)},
+        {'$set': {
+            'isPaid': False,
+            'subscription_end_date': None,
+            'subscription_start_date': None
+        }}
+    )
+
+    if result.matched_count == 0:
+        return {'error': 'Failed to update user subscription status'}, 500
+
+    return {'message': 'Subscription cancelled successfully', 'refund_amount': refund_amount}, 200

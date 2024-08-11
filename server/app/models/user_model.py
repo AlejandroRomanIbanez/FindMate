@@ -67,6 +67,7 @@ class UserWithoutPassword(BaseModel):
             if datetime.now(timezone.utc) >= self.subscription_end_date:
                 self.isPaid = False
                 self.subscription_end_date = None
+                self.subscription_start_date = None
             else:
                 return True
         return False

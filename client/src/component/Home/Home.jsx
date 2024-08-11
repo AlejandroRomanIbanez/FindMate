@@ -26,6 +26,7 @@ function Home({ user, setUser, allUsers, setAllUsers, fetchUserData, loading, se
         }
       });
       const data = await response.json();
+      console.log('Fetched posts:', data);
       if (response.ok) {
         setPosts(data);
       } else {
@@ -43,8 +44,8 @@ function Home({ user, setUser, allUsers, setAllUsers, fetchUserData, loading, se
     fetchPosts();
   }, [fetchUserData]);
 
-  const handleNewPost = async (newPost) => {
-    await fetchPosts();  // Re-fetch the posts to ensure the new post is included
+  const handleNewPost = (newPost) => {
+    setPosts((prevPosts) => [newPost, ...prevPosts]);
   };
 
   const handleDeletePost = (postId) => {

@@ -1,12 +1,11 @@
 from datetime import datetime, timezone
-
 from bson import ObjectId
 from flask import request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.helpers import serialize_object_id
 from app.models.user_model import EditUser, UserWithoutPassword
 from app.services.user_service import update_user, get_all_users, get_user_by_username, add_friend, remove_friend, \
-    get_user_by_id, add_hobby, get_hobbies, delete_hobby, buy_sub
+    get_user_by_id, add_hobby, get_hobbies, delete_hobby, buy_sub, cancel_subscription
 from flask import jsonify
 from .. import mongo
 
@@ -25,7 +24,8 @@ def fetch_current_user():
         {'_id': ObjectId(current_user_id)},
         {'$set': {
             'isPaid': user_obj.isPaid,
-            'subscription_end_date': user_obj.subscription_end_date
+            'subscription_end_date': user_obj.subscription_end_date,
+            'subscription_start_date': user_obj.subscription_start_date
         }}
     )
 
@@ -37,6 +37,12 @@ def buy_sub_endpoint():
     response, status = buy_sub(current_user_id)
     return jsonify(response), status
 
+
+@jwt_required()
+def cancel_subscription_endpoint():
+    current_user_id = get_jwt_identity()
+    response, status = cancel_subscription(current_user_id)
+    return jsonify(response), status
 
 
 @jwt_required()
