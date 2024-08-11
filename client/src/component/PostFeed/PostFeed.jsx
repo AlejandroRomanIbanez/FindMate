@@ -47,19 +47,49 @@ const PostSkeleton = () => (
 function PostFeed({ posts, onDeletePost, allUsers, currentUser }) {
   const [itemsToShow, setItemsToShow] = useState(10);
   const [hasMore, setHasMore] = useState(true);
+  const [currentAds, setCurrentAds] = useState([]); // State to keep track of ads inserted
 
   const loadMorePosts = () => {
     if (itemsToShow >= posts.length) {
       setHasMore(false);
     } else {
       setItemsToShow((prev) => prev + 10);
+
+      // Insert 2 ads for every 10 posts loaded
+      const newAds = [];
+      for (let i = 0; i < 2; i++) {
+        const ad = mockAds[(currentAds.length + i) % mockAds.length];
+        newAds.push({ ...ad, isAd: true });
+      }
+      setCurrentAds((prev) => [...prev, ...newAds]);
     }
   };
+
+  const getPostsAndAds = () => {
+    const combined = [];
+    let postCounter = 0;
+    let adCounter = 0;
+
+    for (let i = 0; i < itemsToShow && i < posts.length; i++) {
+      combined.push(posts[i]);
+      postCounter++;
+
+      // Insert ads at the appropriate points
+      if (postCounter % 5 === 0 && adCounter < currentAds.length) {
+        combined.push(currentAds[adCounter]);
+        adCounter++;
+      }
+    }
+
+    return combined;
+  };
+
+  const postsAndAds = getPostsAndAds();
 
   return (
     <div className="w-full lg:w-4/5 my-2 lg:px-3 py-2 flex items-center justify-center flex-col">
       <InfiniteScroll
-        dataLength={itemsToShow}
+        dataLength={postsAndAds.length}
         next={loadMorePosts}
         hasMore={hasMore}
         loader={<PostSkeleton />}
@@ -69,14 +99,18 @@ function PostFeed({ posts, onDeletePost, allUsers, currentUser }) {
           </p>
         }
       >
-        {posts.slice(0, itemsToShow).map((item) => (
-          <Post
-            key={item._id}
-            post={item}
-            allUsers={allUsers}
-            onDeletePost={onDeletePost}
-            currentUser={currentUser}
-          />
+        {postsAndAds.map((item, index) => (
+          item.isAd ? (
+            <Ad key={item.id || index} ad={item} />
+          ) : (
+            <Post
+              key={item._id || index} // Fallback to index if _id is not available
+              post={item}
+              allUsers={allUsers}
+              onDeletePost={onDeletePost}
+              currentUser={currentUser}
+            />
+          )
         ))}
       </InfiniteScroll>
     </div>
