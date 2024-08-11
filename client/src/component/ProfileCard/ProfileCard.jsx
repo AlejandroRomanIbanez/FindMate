@@ -47,7 +47,7 @@ function ProfileCard({ user, onOpenFriendsModal }) {
         </div>
       </div>
 
-      <div className="w-full text-center capitalize px-4 text-gray-300 mt-2">
+      <div className="w-full text-center capitalize px-4 text-gray-300 mt-2 break-words">
         {user?.bio}
       </div>
       <button

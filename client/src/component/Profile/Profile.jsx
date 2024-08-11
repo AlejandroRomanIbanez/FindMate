@@ -9,8 +9,6 @@ import {
   MDBBtn,
   MDBTypography,
   MDBTooltip,
-  MDBInput,
-  MDBIcon,
 } from 'mdb-react-ui-kit';
 import Modal from 'react-modal';
 import { useParams } from 'react-router-dom';
@@ -63,6 +61,9 @@ export default function Profile() {
   const MAX_CHARS = 100;
 
   useEffect(() => {
+    setCombinedFeed([]);
+    setAdsInserted(false);
+
     const fetchCurrentUserData = async () => {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -256,7 +257,11 @@ export default function Profile() {
           </MDBCol>
         ) : item.img_url ? (
           <MDBCol key={index} className="mb-2" md="6">
-            <div className='bg-image hover-overlay ripple shadow-1-strong rounded' style={{ position: 'relative' }}>
+            <div 
+              className='bg-image hover-overlay ripple shadow-1-strong rounded' 
+              style={{ position: 'relative' }}
+              onClick={() => toggleImageModal(item.img_url, item.isAd)}
+            >
               <MDBCardImage
                 src={item.img_url}
                 alt={`image ${index + 1}`}
@@ -459,6 +464,24 @@ export default function Profile() {
       </Modal>
 
       <UpgradeModal isOpen={showUpgradeModal} onRequestClose={toggleUpgradeModal}/>
+      <Modal
+        isOpen={showImageModal}
+        onRequestClose={() => setShowImageModal(false)}
+        contentLabel="Image Modal"
+        className="image-modal-content"
+        overlayClassName="modal-overlay"
+      >
+        <div className="image-modal-inner" style={{ position: 'relative' }}>
+          <img src={modalImage} alt="Modal" className="img-fluid" />
+          {modalImageIsAd && (
+            <span className="absolute top-2 right-2">
+              <MDBTooltip tag='span' wrapperClass='d-inline-block' title='This is an ad'>
+                <FaAd fontSize={20} className="text-yellow-500 cursor-pointer" />
+              </MDBTooltip>
+            </span>
+          )}
+        </div>
+      </Modal>
       <Modal
         isOpen={showImageModal}
         onRequestClose={() => setShowImageModal(false)}

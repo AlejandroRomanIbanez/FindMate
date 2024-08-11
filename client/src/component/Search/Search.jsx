@@ -97,7 +97,7 @@ const Search = ({ user, allUsers, loading, setLoading, fetchUserData }) => {
         />
       </div>
       {suggestions.length > 0 && (
-        <div className='absolute top-full mt-1 w-full bg-white shadow-lg rounded-md z-10'>
+        <div className='absolute top-full mt-1 w-full bg-white shadow-lg rounded-md z-10 max-h-96 overflow-y-auto'>
           {suggestions.map((suggestion) => (
             <div 
               key={suggestion._id} 

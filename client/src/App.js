@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Auth from './component/Auth/Auth';
 import Profile from './component/Profile/Profile';
 import Header from './component/Header/Header';
@@ -107,6 +107,7 @@ const WithHeader = React.memo(({ user, setUser, allUsers, setAllUsers, fetchUser
         />
       } />
       <Route path="/profile/:username" element={<Profile />} />
+      <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   </>
 ));
