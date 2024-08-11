@@ -1,18 +1,41 @@
+from datetime import datetime, timezone
+
+from bson import ObjectId
 from flask import request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.helpers import serialize_object_id
-from app.models.user_model import EditUser
-from app.services.user_service import update_user, get_all_users, get_user_by_username, add_friend, remove_friend, get_user_by_id, add_hobby, get_hobbies, delete_hobby
+from app.models.user_model import EditUser, UserWithoutPassword
+from app.services.user_service import update_user, get_all_users, get_user_by_username, add_friend, remove_friend, \
+    get_user_by_id, add_hobby, get_hobbies, delete_hobby, buy_sub
 from flask import jsonify
+from .. import mongo
 
 
 @jwt_required()
 def fetch_current_user():
     current_user_id = get_jwt_identity()
     user, status = get_user_by_id(current_user_id)
-    if 'password' in user:
-        user.pop('password')
-    return jsonify(user), status
+
+    # Use the UserWithoutPassword model to exclude the password field
+    user_obj = UserWithoutPassword(**user)
+    user_obj.is_subscription_active()
+
+    # Save any changes back to the database (if subscription was marked inactive)
+    mongo.social.users.update_one(
+        {'_id': ObjectId(current_user_id)},
+        {'$set': {
+            'isPaid': user_obj.isPaid,
+            'subscription_end_date': user_obj.subscription_end_date
+        }}
+    )
+
+    return jsonify(user_obj.to_dict()), status
+
+@jwt_required()
+def buy_sub_endpoint():
+    current_user_id = get_jwt_identity()
+    response, status = buy_sub(current_user_id)
+    return jsonify(response), status
 
 
 

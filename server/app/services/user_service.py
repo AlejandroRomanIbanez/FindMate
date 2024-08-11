@@ -1,3 +1,5 @@
+from datetime import datetime, timezone, timedelta
+
 from werkzeug.security import generate_password_hash
 from app import mongo
 from bson import ObjectId
@@ -135,3 +137,23 @@ def delete_hobby(user_id, hobby):
     if result.modified_count == 0:
         return {'error': 'Failed to delete hobby'}, 400
     return {'message': 'Hobby deleted successfully'}, 200
+
+
+def buy_sub(user_id):
+    subscription_duration = 30  # days
+    subscription_start = datetime.now(timezone.utc)
+    subscription_end = subscription_start + timedelta(days=subscription_duration)
+
+    result = mongo.social.users.update_one(
+        {'_id': ObjectId(user_id)},
+        {'$set': {
+            'isPaid': True,
+            'subscription_start_date': subscription_start,
+            'subscription_end_date': subscription_end
+        }}
+    )
+
+    if result.matched_count == 0:
+        return {'error': 'User not found'}, 404
+
+    return {'message': 'Subscription purchased successfully'}, 200

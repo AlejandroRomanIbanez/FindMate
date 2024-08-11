@@ -12,7 +12,7 @@ function PossibleFriends({ allUsers, currentUser, fetchCurrentUser, loading, set
 
   const filterUsers = useCallback((allUsers, currentUser) => {
     return allUsers
-      .filter(user => user._id !== currentUser._id && !currentUser.friends.following.includes(user._id))
+      .filter(user => user.username !== currentUser.username && !currentUser.friends.following.includes(user._id))
       .sort(() => 0.5 - Math.random());
   }, []);
   

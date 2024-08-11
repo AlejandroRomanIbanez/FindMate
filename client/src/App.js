@@ -62,7 +62,7 @@ function App() {
   }, [fetchUserData, fetchAllUsers]);
 
   if (loadingUser) {
-    return <div>Loading...</div>; // You can add a better loading screen here
+    return <div>Loading...</div>;
   }
 
   return (

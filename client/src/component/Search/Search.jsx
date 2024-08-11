@@ -13,7 +13,7 @@ const Search = ({ user, allUsers, loading, setLoading, fetchUserData }) => {
       if (query.length > 1) {
         const filteredSuggestions = allUsers.filter(
           suggestionUser =>
-            suggestionUser._id !== user._id &&
+            suggestionUser.username !== user.username &&
             (suggestionUser.username.toLowerCase().includes(query.toLowerCase()) ||
             suggestionUser.email.toLowerCase().includes(query.toLowerCase()))
         );
