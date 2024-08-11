@@ -33,10 +33,10 @@ def register_user(data):
     if age < 16:
         return {'error': 'User must be at least 16 years old to register.'}, 400
 
-    if mongo.dbs.users.find_one({'username': username}):
+    if mongo.social.users.find_one({'username': username}):
         raise UserAlreadyExistsError()
 
-    mongo.dbs.users.insert_one({
+    mongo.social.users.insert_one({
         'avatar_url': '',
         'email': email,
         'username': username,
@@ -66,7 +66,7 @@ def login_user(data):
     email = data.email
     password = data.password
 
-    user = mongo.dbs.users.find_one({'email': email})
+    user = mongo.social.users.find_one({'email': email})
     if not user:
         raise UserNotFoundError()
     if not check_password_hash(user['password'], password):

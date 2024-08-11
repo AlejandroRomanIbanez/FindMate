@@ -9,10 +9,10 @@ def create_post(author_id, content, img_url):
         'author': ObjectId(author_id),
         'img_url': img_url
     }
-    result = mongo.dbs.posts.insert_one(post)
+    result = mongo.social.posts.insert_one(post)
     post_id = result.inserted_id
 
-    mongo.dbs.users.update_one(
+    mongo.social.users.update_one(
         {'_id': ObjectId(author_id)},
         {'$push': {'posts': str(post_id)}}
     )
@@ -20,23 +20,23 @@ def create_post(author_id, content, img_url):
 
 
 def get_user_posts(user_id):
-    posts = mongo.dbs.posts.find({'author': ObjectId(user_id)})
+    posts = mongo.social.posts.find({'author': ObjectId(user_id)})
     posts_serialized = [serialize_object_id(post) for post in posts]
     return posts_serialized
 
 
 def get_all_posts():
-    posts = mongo.dbs.posts.find()
+    posts = mongo.social.posts.find().sort('_id', -1)
     posts_serialized = [serialize_object_id(post) for post in posts]
     return posts_serialized
 
 
 def delete_post(post_id):
-    result = mongo.dbs.posts.delete_one({'_id': ObjectId(post_id)})
+    result = mongo.social.posts.delete_one({'_id': ObjectId(post_id)})
     if result.deleted_count == 0:
         return {'error': 'Post not found'}, 404
 
-    mongo.dbs.users.update_one(
+    mongo.social.users.update_one(
         {'posts': str(post_id)},
         {'$pull': {'posts': str(post_id)}}
     )

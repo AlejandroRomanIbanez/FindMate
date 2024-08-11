@@ -1,5 +1,6 @@
 from flask import Blueprint
-from app.controllers.post_controller import create_post_endpoint, get_user_posts_endpoint, get_all_posts_endpoint, delete_post_endpoint
+from app.controllers.post_controller import create_post_endpoint, get_user_posts_endpoint, get_all_posts_endpoint, \
+    delete_post_endpoint
 
 post_bp = Blueprint('post', __name__, url_prefix='/api/post')
 

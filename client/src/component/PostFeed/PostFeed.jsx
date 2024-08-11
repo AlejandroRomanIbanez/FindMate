@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
 import Post from "./Post";
 import Ad from "../Ad/Ad";
-import { useState, useMemo, useEffect } from "react";
 
 const mockAds = [
   {
@@ -44,49 +44,43 @@ const PostSkeleton = () => (
   </div>
 );
 
-function PostFeed({ posts, allUsers, onDeletePost, loading, currentUser }) {
-  const [combinedFeed, setCombinedFeed] = useState([]);
+function PostFeed({ posts, onDeletePost, allUsers, currentUser }) {
+  const [itemsToShow, setItemsToShow] = useState(10);
+  const [hasMore, setHasMore] = useState(true);
 
-  // Memoize the ad integration logic
-  const integrateAdsWithPosts = useMemo(() => (postsToIntegrate) => {
-    const combined = [...postsToIntegrate];
-    const adCount = Math.min(mockAds.length, Math.floor(postsToIntegrate.length / 2));
-    for (let i = 0; i < adCount; i++) {
-      const adIndex = Math.floor(Math.random() * (combined.length + 1));
-      combined.splice(adIndex, 0, mockAds[i]);
+  const loadMorePosts = () => {
+    if (itemsToShow >= posts.length) {
+      setHasMore(false);
+    } else {
+      setItemsToShow((prev) => prev + 10);
     }
-    return combined;
-  }, []);
-
-  useEffect(() => {
-    if (!loading && posts.length > 0) {
-      const integrated = integrateAdsWithPosts(posts);
-      setCombinedFeed(integrated);
-    }
-  }, [posts, loading, integrateAdsWithPosts]);
-
-  if (loading) {
-    return (
-      <div className="w-full lg:w-4/5 my-2 lg:px-3 py-2 flex items-center justify-center flex-col-reverse">
-        <PostSkeleton />
-        <PostSkeleton />
-        <PostSkeleton />
-      </div>
-    );
-  }
+  };
 
   return (
-    <div className="w-full lg:w-4/5 my-2 lg:px-3 py-2 flex items-center justify-center flex-col-reverse">
-      {combinedFeed.map((item) =>
-        item._id ? (
-          <Post key={item._id} post={item} allUsers={allUsers} onDeletePost={onDeletePost} currentUser={currentUser} />
-        ) : (
-          <Ad key={item.id} ad={item} isProfile={false} />
-        )
-      )}
+    <div className="w-full lg:w-4/5 my-2 lg:px-3 py-2 flex items-center justify-center flex-col">
+      <InfiniteScroll
+        dataLength={itemsToShow}
+        next={loadMorePosts}
+        hasMore={hasMore}
+        loader={<PostSkeleton />}
+        endMessage={
+          <p style={{ textAlign: 'center', color: 'white' }}>
+            <b>Yay! You have seen it all</b>
+          </p>
+        }
+      >
+        {posts.slice(0, itemsToShow).map((item) => (
+          <Post
+            key={item._id}
+            post={item}
+            allUsers={allUsers}
+            onDeletePost={onDeletePost}
+            currentUser={currentUser}
+          />
+        ))}
+      </InfiniteScroll>
     </div>
   );
 }
-
 
 export default PostFeed;
