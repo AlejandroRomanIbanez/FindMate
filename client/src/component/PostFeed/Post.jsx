@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import Modal from 'react-modal';
+import { useNavigate } from 'react-router-dom'; // Import the useNavigate hook
 
 Modal.setAppElement('#root');
 
@@ -8,8 +9,10 @@ function Post({ post, allUsers, onDeletePost, currentUser }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);  // Ref for the dropdown menu
+  const navigate = useNavigate();  // Initialize navigate
 
   const author = allUsers.find(user => user._id === post.author);
+  const isAuthor = currentUser.username === author?.username;
 
   const handleDelete = async () => {
     try {
@@ -47,6 +50,12 @@ function Post({ post, allUsers, onDeletePost, currentUser }) {
     };
   }, []);
 
+  const goToProfile = () => {
+    if (author?.username) {
+      navigate(`/profile/${author.username}`);
+    }
+  };
+
   return (
     <div className="bg-gray-800 w-full lg:px-4 py-2 my-3 rounded-3xl flex items-center justify-center flex-col">
       {/* post top section */}
@@ -56,17 +65,24 @@ function Post({ post, allUsers, onDeletePost, currentUser }) {
             src={author?.avatar_url || "user_default.png"}
             alt="userPic"
             className="lg:w-10 lg:h-10 w-8 h-8 rounded-2xl object-cover border-2 border-gray-500 cursor-pointer"
+            onClick={goToProfile}  // Add navigation to profile on click
           />
         </span>
         <span className="w-3/4 flex items-start justify-center flex-col">
-          <h3 className="mx-2 text-gray-400 text-sm lg:text-base cursor-pointer font-semibold my-1">
+          <h3 
+            className="mx-2 text-gray-400 text-sm lg:text-base cursor-pointer font-semibold my-1"
+            onClick={goToProfile}  // Add navigation to profile on click
+          >
             {author?.email || "Loading..."}
           </h3>
-          <h3 className="mx-2 text-gray-200 text-sm lg:text-lg cursor-pointer font-semibold flex items-center justify-center">
+          <h3 
+            className="mx-2 text-gray-200 text-sm lg:text-lg cursor-pointer font-semibold flex items-center justify-center"
+            onClick={goToProfile}  // Add navigation to profile on click
+          >
             {author?.username || "Loading..."}
           </h3>
         </span>
-        {currentUser._id === post.author && (
+        {isAuthor && (
           <span className="relative w-1/12 flex items-center justify-center">
             <BsThreeDotsVertical
               fontSize={22}

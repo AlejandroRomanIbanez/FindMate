@@ -91,6 +91,7 @@ export default function Profile() {
         }
       });
       const data = await response.json();
+      console.log(data._id);
       if (response.ok) {
         const postsResponse = await fetch(`http://localhost:5000/api/post/user/${data._id}`, {
           headers: {
@@ -215,17 +216,51 @@ export default function Profile() {
     }
   };
 
+  useEffect(() => {
+    if (user && user.posts && !adsInserted) {
+      const combined = [...user.posts];
+
+      // Insert ads with a bug for paid users
+      if (currentUser && currentUser.isPaid) {
+        for (let i = 0; i < mockAds.length; i++) {
+          const adIndex = Math.floor(Math.random() * (combined.length + 1));
+          combined.splice(adIndex, 0, {
+            id: `error${i}`,
+            isError: true,
+            message: 'Oops! Something went wrong while loading this content.'
+          });
+        }
+      } else {
+        // Normal ad insertion for unpaid users
+        const adCount = Math.min(mockAds.length, Math.floor(user.posts.length / 2));
+        for (let i = 0; i < adCount; i++) {
+          const adIndex = Math.floor(Math.random() * (combined.length + 1));
+          combined.splice(adIndex, 0, mockAds[i]);
+        }
+      }
+
+      setCombinedFeed(combined);
+      setAdsInserted(true);
+    }
+  }, [user, adsInserted, currentUser]);
+
   const renderPosts = () => (
     <MDBRow className="g-2">
       {combinedFeed.slice(0, showAll ? combinedFeed.length : 4).map((item, index) =>
-        item.img_url ? (
+        item.isError ? (
+          <MDBCol key={item.id} className="mb-2" md="6">
+            <div className="bg-gray-800 p-3 rounded shadow-sm">
+              <img src="/process-error.svg" alt="error" className='w-100' />
+              <p className="text-danger">{item.message}</p>
+            </div>
+          </MDBCol>
+        ) : item.img_url ? (
           <MDBCol key={index} className="mb-2" md="6">
             <div className='bg-image hover-overlay ripple shadow-1-strong rounded' style={{ position: 'relative' }}>
               <MDBCardImage
                 src={item.img_url}
                 alt={`image ${index + 1}`}
                 className="w-100 rounded-3 post-image"
-                onClick={() => toggleImageModal(item.img_url, item.isAd)}
                 style={{ cursor: 'pointer' }}
               />
               {item.isAd && (

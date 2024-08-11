@@ -44,8 +44,8 @@ function Home({ user, setUser, allUsers, setAllUsers, fetchUserData, loading, se
     fetchPosts();
   }, [fetchUserData]);
 
-  const handleNewPost = (newPost) => {
-    setPosts((prevPosts) => [newPost, ...prevPosts]);
+  const handleNewPost = () => {
+    fetchPosts();
   };
 
   const handleDeletePost = (postId) => {

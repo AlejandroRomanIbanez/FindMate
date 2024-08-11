@@ -6,7 +6,7 @@ from app.helpers import serialize_object_id
 def create_post(author_id, content, img_url):
     post = {
         'content': content,
-        'author': ObjectId(author_id),
+        'author': author_id,
         'img_url': img_url
     }
     result = mongo.social.posts.insert_one(post)
@@ -20,7 +20,7 @@ def create_post(author_id, content, img_url):
 
 
 def get_user_posts(user_id):
-    posts = mongo.social.posts.find({'author': ObjectId(user_id)})
+    posts = mongo.social.posts.find({'author': user_id})
     posts_serialized = [serialize_object_id(post) for post in posts]
     return posts_serialized
 

@@ -55,13 +55,26 @@ function PostFeed({ posts, onDeletePost, allUsers, currentUser }) {
     } else {
       setItemsToShow((prev) => prev + 10);
 
-      // Insert 2 ads for every 10 posts loaded
-      const newAds = [];
-      for (let i = 0; i < 2; i++) {
-        const ad = mockAds[(currentAds.length + i) % mockAds.length];
-        newAds.push({ ...ad, isAd: true });
+      // Insert ads or errors for paid users
+      if (currentUser && currentUser.isPaid) {
+        const newErrors = [];
+        for (let i = 0; i < 2; i++) {
+          newErrors.push({
+            id: `error${currentAds.length + i}`,
+            isError: true,
+            message: 'Oops! Something went wrong while loading this content.'
+          });
+        }
+        setCurrentAds((prev) => [...prev, ...newErrors]);
+      } else {
+        // Normal ad insertion for unpaid users
+        const newAds = [];
+        for (let i = 0; i < 2; i++) {
+          const ad = mockAds[(currentAds.length + i) % mockAds.length];
+          newAds.push({ ...ad, isAd: true });
+        }
+        setCurrentAds((prev) => [...prev, ...newAds]);
       }
-      setCurrentAds((prev) => [...prev, ...newAds]);
     }
   };
 
@@ -74,7 +87,7 @@ function PostFeed({ posts, onDeletePost, allUsers, currentUser }) {
       combined.push(posts[i]);
       postCounter++;
 
-      // Insert ads at the appropriate points
+      // Insert ads or errors at the appropriate points
       if (postCounter % 5 === 0 && adCounter < currentAds.length) {
         combined.push(currentAds[adCounter]);
         adCounter++;
@@ -100,7 +113,12 @@ function PostFeed({ posts, onDeletePost, allUsers, currentUser }) {
         }
       >
         {postsAndAds.map((item, index) => (
-          item.isAd ? (
+          item.isError ? (
+            <div key={item.id || index} className="bg-gray-800 p-3 rounded shadow-sm w-full my-2">
+              <img src="/process-error.svg" alt="error" className='w-100 mb-2' />
+              <p className="text-danger">{item.message}</p>
+            </div>
+          ) : item.isAd ? (
             <Ad key={item.id || index} ad={item} />
           ) : (
             <Post

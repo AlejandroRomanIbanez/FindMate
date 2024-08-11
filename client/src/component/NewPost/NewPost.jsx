@@ -51,6 +51,7 @@ function NewPost({ onNewPost, currentUser }) {
     const postData = {
       content: title,
       img_url: img_url,
+      author: currentUser._id,  // Make sure the author is correctly assigned
     };
 
     try {
@@ -65,7 +66,7 @@ function NewPost({ onNewPost, currentUser }) {
 
       const data = await response.json();
       if (response.ok) {
-        onNewPost(data);
+        onNewPost();
         setUploadData(false);
         setImage(null);
         setTitle('');
