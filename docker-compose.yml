@@ -18,6 +18,9 @@ services:
     container_name: client
     ports:
       - "80:80"
+      - "443:443"
+    volumes:
+      - ./ssl-certs/findmate.masterschool.com:/etc/ssl/certs:ro
     networks:
       - app-network
 
