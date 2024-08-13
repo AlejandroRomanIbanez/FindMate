@@ -5,3 +5,5 @@ Flask-JWT-Extended
 pydantic
 python-dotenv
 gunicorn
+botocore
+boto3
