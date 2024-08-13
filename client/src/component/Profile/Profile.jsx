@@ -181,23 +181,32 @@ export default function Profile() {
     if (bioError) {
       return;
     }
+
+    // Create a new object to hold the updated user data
+    const updatedUser = {};
+    
+    if (user.username) updatedUser.username = user.username;
+    if (user.email) updatedUser.email = user.email;
+    if (user.password) updatedUser.password = user.password;
+    if (user.age) updatedUser.age = user.age;
+
     const token = localStorage.getItem('token');
     const response = await fetch(`${process.env.REACT_APP_BACKEND_SERVER}/api/user/edit`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(user)
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updatedUser)
     });
     const data = await response.json();
     if (response.ok) {
-      alert('Profile updated successfully');
-      toggleEditProfileModal();
+        alert('Profile updated successfully');
+        toggleEditProfileModal();
     } else {
-      alert(data.error);
+        alert(data.error);
     }
-  };
+};
 
   const handleUpgrade = async () => {
     const token = localStorage.getItem('token');
@@ -220,26 +229,14 @@ export default function Profile() {
   useEffect(() => {
     if (user && user.posts && !adsInserted) {
       const combined = [...user.posts];
-
-      // Insert ads with a bug for paid users
-      if (currentUser && currentUser.isPaid) {
-        for (let i = 0; i < mockAds.length; i++) {
-          const adIndex = Math.floor(Math.random() * (combined.length + 1));
-          combined.splice(adIndex, 0, {
-            id: `error${i}`,
-            isError: true,
-            message: 'Oops! Something went wrong while loading this content.'
-          });
-        }
-      } else {
-        // Normal ad insertion for unpaid users
-        const adCount = Math.min(mockAds.length, Math.floor(user.posts.length / 2));
-        for (let i = 0; i < adCount; i++) {
-          const adIndex = Math.floor(Math.random() * (combined.length + 1));
-          combined.splice(adIndex, 0, mockAds[i]);
-        }
+    
+      // Always insert ads, no subscription check
+      const adCount = Math.min(mockAds.length, Math.floor(user.posts.length / 2));
+      for (let i = 0; i < adCount; i++) {
+        const adIndex = Math.floor(Math.random() * (combined.length + 1));
+        combined.splice(adIndex, 0, mockAds[i]);
       }
-
+    
       setCombinedFeed(combined);
       setAdsInserted(true);
     }
@@ -325,13 +322,6 @@ export default function Profile() {
                     onMouseLeave={() => setHovered(false)}
                   >
                     Edit profile
-                  </MDBBtn>
-                  <MDBBtn 
-                    color="warning" 
-                    className="mt-2"
-                    onClick={toggleUpgradeModal}
-                  >
-                    {user.isPaid ? "Subscription" : "Upgrade Plan"}
                   </MDBBtn>
                 </>
                 )}
@@ -437,22 +427,6 @@ export default function Profile() {
               value={user.age}
               onChange={handleChange}
             />
-            <textarea
-              name="bio"
-              placeholder="Bio..."
-              className={`w-full my-3 bg-transparent rounded px-2 text-sm outline-none py-2 placeholder:text-gray-300 ${bioError ? 'border-2 border-red-500' : 'border border-gray-900'}`}
-              value={user.bio}
-              onChange={handleChange}
-              style={{ 
-                borderColor: bioError ? 'red' : 'gray',
-                borderWidth: bioError ? '2px' : '1px'
-              }}
-            />
-            <div className="flex justify-between items-center text-sm">
-              <span className={bioError ? 'text-red-500' : 'text-gray-300'}>
-                {bioError ? 'You have reached the limit to talk about you.' : `Words: ${bioCharCount}/${MAX_CHARS}`}
-              </span>
-            </div>
             <input
               type="submit"
               className={`px-5 py-2 my-4 font-semibold rounded-md cursor-pointer ${bioError ? 'bg-gray-500 text-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-gray-500 to-yellow-500 text-white'}`}

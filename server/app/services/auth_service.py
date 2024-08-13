@@ -27,11 +27,7 @@ def register_user(data):
     email = data.email
     password = generate_password_hash(data.password)
     date_of_birth = data.date_of_birth
-    bio = data.bio
     age = calculate_age(date_of_birth)
-
-    if age < 16:
-        return {'error': 'User must be at least 16 years old to register.'}, 400
 
     if mongo.social.users.find_one({'username': username}):
         raise UserAlreadyExistsError()
@@ -42,8 +38,8 @@ def register_user(data):
         'username': username,
         'password': password,
         'date_of_birth': date_of_birth.isoformat(),
-        'bio': bio,
         'isPaid': False,
+        'bio': '',
         'friends': {'followers': [], 'following': []},
         'posts': [],
         'age': age

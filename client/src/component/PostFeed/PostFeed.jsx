@@ -55,26 +55,12 @@ function PostFeed({ posts, onDeletePost, allUsers, currentUser }) {
     } else {
       setItemsToShow((prev) => prev + 10);
 
-      // Insert ads or errors for paid users
-      if (currentUser && currentUser.isPaid) {
-        const newErrors = [];
-        for (let i = 0; i < 2; i++) {
-          newErrors.push({
-            id: `error${currentAds.length + i}`,
-            isError: true,
-            message: 'Oops! Something went wrong while loading this content.'
-          });
-        }
-        setCurrentAds((prev) => [...prev, ...newErrors]);
-      } else {
-        // Normal ad insertion for unpaid users
-        const newAds = [];
-        for (let i = 0; i < 2; i++) {
-          const ad = mockAds[(currentAds.length + i) % mockAds.length];
-          newAds.push({ ...ad, isAd: true });
-        }
-        setCurrentAds((prev) => [...prev, ...newAds]);
+      const newAds = [];
+      for (let i = 0; i < 2; i++) {
+        const ad = mockAds[(currentAds.length + i) % mockAds.length];
+        newAds.push({ ...ad, isAd: true });
       }
+      setCurrentAds((prev) => [...prev, ...newAds]);
     }
   };
 

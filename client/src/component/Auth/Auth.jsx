@@ -16,7 +16,6 @@ function Auth() {
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
     const [dateOfBirth, setDateOfBirth] = useState('');
-    const [bio, setBio] = useState('');
     const [error, setError] = useState('');
 
     const handleLogin = async () => {
@@ -52,7 +51,7 @@ function Auth() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ username, email, password, date_of_birth: formattedDate, bio }) 
+                body: JSON.stringify({ username, email, password, date_of_birth: formattedDate }) 
             });
             const data = await response.json();
             if (response.ok) {
@@ -78,7 +77,6 @@ function Auth() {
                                 <>
                                     <MDBInput wrapperClass='mb-4' label='Username' id='form1' type='text' value={username} onChange={(e) => setUsername(e.target.value)} />
                                     <MDBInput wrapperClass='mb-4' label='Date of Birth' id='form2' type='date' value={dateOfBirth} onChange={(e) => setDateOfBirth(e.target.value)} />  {/* Date input */}
-                                    <MDBInput wrapperClass='mb-4' label='Bio' id='form3' type='text' value={bio} onChange={(e) => setBio(e.target.value)} />
                                 </>
                             )}
                             <MDBInput wrapperClass='mb-4' label='Email' id='form4' type='email' value={email} onChange={(e) => setEmail(e.target.value)} />
