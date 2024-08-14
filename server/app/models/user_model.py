@@ -20,7 +20,7 @@ class User(BaseModel):
     password: str = Field(..., min_length=6)
     date_of_birth: datetime
     age: int
-    bio: str = Field(..., min_length=1, max_length=100)
+    bio: Optional[str] = Field(..., max_length=100)
     isPaid: bool
     subscription_start_date: Optional[datetime] = None
     subscription_end_date: Optional[datetime] = None
@@ -48,7 +48,7 @@ class UserWithoutPassword(BaseModel):
     email: str
     date_of_birth: datetime
     age: int
-    bio: str = Field(..., min_length=1, max_length=100)
+    bio: Optional[str] = Field(..., max_length=100)
     isPaid: bool = False
     subscription_start_date: Optional[datetime] = None
     subscription_end_date: Optional[datetime] = None
@@ -92,4 +92,4 @@ class EditUser(BaseModel):
     email: Optional[str] = None
     password: Optional[str] = Field(None, min_length=6)
     age: Optional[int] = None
-    bio: Optional[str] = Field(None, min_length=1, max_length=100)
+    bio: Optional[str] = Field(..., max_length=100)
