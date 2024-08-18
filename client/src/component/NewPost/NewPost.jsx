@@ -35,12 +35,21 @@ function NewPost({ onNewPost, currentUser }) {
       formData.append('image', image);
 
       try {
-        const response = await fetch(`https://api.imgbb.com/1/upload?key=${process.env.REACT_APP_IMGBB_API_KEY}`, {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_SERVER}/api/post/upload-image`, {
           method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
           body: formData
         });
         const data = await response.json();
-        img_url = data.data.url;
+        if (response.ok) {
+          img_url = data.img_url;
+        } else {
+          console.error('Error uploading image:', data.error);
+          setUploading(false);
+          return;
+        }
       } catch (error) {
         console.error('Error uploading image to ImgBB:', error);
         setUploading(false);
@@ -51,7 +60,7 @@ function NewPost({ onNewPost, currentUser }) {
     const postData = {
       content: title,
       img_url: img_url,
-      author: currentUser._id,  // Make sure the author is correctly assigned
+      author: currentUser._id,
     };
 
     try {
