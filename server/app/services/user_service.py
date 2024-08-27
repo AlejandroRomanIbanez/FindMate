@@ -54,7 +54,7 @@ def update_user(user_id, data):
         update_fields['age'] = data.age
 
     if data.bio:
-        update_fields['bio'] = data.bio
+        update_fields['bio'] = data.bio[:20]
 
     if data.avatar_url:
         update_fields['avatar_url'] = data.avatar_url

@@ -27,7 +27,7 @@ def register_user(data):
     email = data.email
     password = generate_password_hash(data.password)
     date_of_birth = data.date_of_birth
-    bio = data.bio
+    bio = data.bio[:20]
     age = calculate_age(date_of_birth)
 
     if age < 16:

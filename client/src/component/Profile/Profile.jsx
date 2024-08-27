@@ -362,7 +362,7 @@ export default function Profile() {
               <div className="mb-5">
                 <p className="lead fw-normal mb-1">About</p>
                 <div className="p-4" style={{ backgroundColor: '#f8f9fa' }}>
-                  <MDBCardText className="font-italic mb-1">{user.bio}</MDBCardText>
+                  <MDBCardText className="font-italic mb-1">{user.bio ? user.bio.substring(0, 20) : ''}</MDBCardText>
                 </div>
               </div>
               <div className="d-flex justify-content-between align-items-center mb-4">
